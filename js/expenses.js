@@ -1,247 +1,185 @@
-// =====================================
-// Expense Management
-// =====================================
+// ======================================
+// Expense Controller
+// ======================================
 
-let expenses = [];
+const ExpenseController = {
+  init() {
+    const saveBtn = document.getElementById("saveExpenseBtn");
 
-// -----------------------------
-// Save Expense
-// -----------------------------
-const saveExpenseBtn = document.getElementById("saveExpenseBtn");
+    if (saveBtn) {
+      saveBtn.addEventListener("click", ExpenseController.saveExpense);
+    }
+  },
 
-if (saveExpenseBtn) {
-  saveExpenseBtn.addEventListener("click", saveExpense);
-}
+  // -----------------------------
+  // Save / Update Expense
+  // -----------------------------
+  async saveExpense() {
+    try {
+      const expense = ExpenseController.readForm();
 
-async function saveExpense() {
-  const user = auth.currentUser;
+      if (!expense) return;
 
-  if (!user) {
-    Swal.fire("Error", "Please login first.", "error");
-    return;
-  }
+      const isEditing = AppState.editingExpenseId !== null;
 
-  const title = document.getElementById("expenseTitle").value.trim();
-  const amount = Number(document.getElementById("expenseAmount").value);
-  const category = document.getElementById("expenseCategory").value;
-  const date = document.getElementById("expenseDate").value;
-  const notes = document.getElementById("expenseNotes").value.trim();
+      Utils.showLoading(
+        isEditing ? "Updating Expense..." : "Saving Expense...",
+      );
 
-  if (!title || amount <= 0 || !category || !date) {
-    Swal.fire({
-      icon: "warning",
-      title: "Please fill all required fields",
-    });
+      if (isEditing) {
+        await FirestoreService.updateExpense(
+          AppState.editingExpenseId,
+          expense,
+        );
+      } else {
+        await FirestoreService.saveExpense(expense);
+      }
 
-    return;
-  }
+      AppState.expenses = await FirestoreService.getExpenses();
 
-  try {
-    await db.collection("users").doc(user.uid).collection("expenses").add({
+      Utils.hideLoading();
+
+      Utils.clearExpenseForm();
+
+      // Exit edit mode
+      AppState.editingExpenseId = null;
+
+      document.getElementById("saveExpenseBtn").textContent = "Save Expense";
+
+      UI.renderDashboard();
+      UI.renderExpenses();
+      Charts.renderAll();
+
+      Utils.showToast(
+        "success",
+        isEditing ? "Expense Updated" : "Expense Saved",
+      );
+    } catch (error) {
+      Utils.hideLoading();
+
+      console.error(error);
+
+      Swal.fire({
+        icon: "error",
+        title: "Operation Failed",
+        text: error.message,
+      });
+    }
+  },
+
+  // -----------------------------
+  // Read Form
+  // -----------------------------
+  readForm() {
+    const title = document.getElementById("expenseTitle").value.trim();
+
+    const amount = Number(document.getElementById("expenseAmount").value);
+
+    const category = document.getElementById("expenseCategory").value;
+
+    const date = document.getElementById("expenseDate").value;
+
+    const notes = document.getElementById("expenseNotes").value.trim();
+
+    if (!title) {
+      Swal.fire("Validation", "Please enter title.", "warning");
+      return null;
+    }
+
+    if (amount <= 0) {
+      Swal.fire("Validation", "Please enter valid amount.", "warning");
+      return null;
+    }
+
+    if (!category) {
+      Swal.fire("Validation", "Please select category.", "warning");
+      return null;
+    }
+
+    if (!date) {
+      Swal.fire("Validation", "Please select date.", "warning");
+      return null;
+    }
+
+    return {
       title,
       amount,
       category,
       date,
       notes,
+    };
+  },
 
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+  // -----------------------------
+  // Delete Expense
+  // -----------------------------
+  async deleteExpense(id) {
+    const result = await Swal.fire({
+      title: "Delete Expense?",
+      text: "This action cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Delete",
+      confirmButtonColor: "#EF4444",
     });
 
-    Swal.fire({
-      icon: "success",
-      title: "Expense Saved",
-      timer: 1200,
-      showConfirmButton: false,
-    });
+    if (!result.isConfirmed) return;
 
-    clearForm();
+    try {
+      Utils.showLoading("Deleting...");
 
-    loadExpenses();
-  } catch (error) {
-    console.error(error);
+      await FirestoreService.deleteExpense(id);
 
-    Swal.fire("Error", error.message, "error");
-  }
-}
+      AppState.expenses = await FirestoreService.getExpenses();
 
-// -----------------------------
-// Load Expenses
-// -----------------------------
-async function loadExpenses() {
-  const user = auth.currentUser;
+      Utils.hideLoading();
 
-  if (!user) return;
+      UI.renderDashboard();
+      UI.renderExpenses();
+      Charts.renderAll();
 
-  const snapshot = await db
-    .collection("users")
-    .doc(user.uid)
-    .collection("expenses")
-    .orderBy("date", "desc")
-    .get();
+      Utils.showToast("success", "Expense Deleted");
+    } catch (error) {
+      Utils.hideLoading();
 
-  expenses = [];
+      console.error(error);
 
-  snapshot.forEach((doc) => {
-    expenses.push({
-      id: doc.id,
-
-      ...doc.data(),
-    });
-  });
-
-  renderExpenses();
-
-  updateDashboard();
-}
-
-// -----------------------------
-// Render Expense List
-// -----------------------------
-function renderExpenses() {
-  const expenseList = document.getElementById("expenseList");
-
-  expenseList.innerHTML = "";
-
-  if (expenses.length === 0) {
-    expenseList.innerHTML = `
-            <div class="empty-state">
-                <i class="fa-solid fa-receipt"></i>
-                <p>No expenses added yet.</p>
-            </div>
-        `;
-
-    return;
-  }
-
-  expenses.forEach((expense) => {
-    expenseList.innerHTML += `
-
-        <div class="expense-item">
-
-            <div>
-
-                <h3>${expense.title}</h3>
-
-                <small>
-
-                    ${expense.category}
-
-                    •
-
-                    ${expense.date}
-
-                </small>
-
-            </div>
-
-            <div>
-
-                <strong>₹${expense.amount}</strong>
-
-                <button
-                    class="delete-btn"
-                    onclick="deleteExpense('${expense.id}')">
-
-                    <i class="fa-solid fa-trash"></i>
-
-                </button>
-
-            </div>
-
-        </div>
-
-        `;
-  });
-}
-
-// -----------------------------
-// Delete Expense
-// -----------------------------
-async function deleteExpense(id) {
-  const result = await Swal.fire({
-    title: "Delete Expense?",
-
-    icon: "warning",
-
-    showCancelButton: true,
-
-    confirmButtonText: "Delete",
-  });
-
-  if (!result.isConfirmed) return;
-
-  const user = auth.currentUser;
-
-  await db
-
-    .collection("users")
-
-    .doc(user.uid)
-
-    .collection("expenses")
-
-    .doc(id)
-
-    .delete();
-
-  loadExpenses();
-}
-
-// -----------------------------
-// Dashboard
-// -----------------------------
-function updateDashboard() {
-  let total = 0;
-
-  let today = 0;
-
-  let week = 0;
-
-  let month = 0;
-
-  const now = new Date();
-
-  const todayStr = now.toISOString().split("T")[0];
-
-  expenses.forEach((expense) => {
-    total += Number(expense.amount);
-
-    if (expense.date === todayStr) today += Number(expense.amount);
-
-    const expenseDate = new Date(expense.date);
-
-    const diffDays = (now - expenseDate) / (1000 * 60 * 60 * 24);
-
-    if (diffDays <= 7) week += Number(expense.amount);
-
-    if (
-      expenseDate.getMonth() === now.getMonth() &&
-      expenseDate.getFullYear() === now.getFullYear()
-    ) {
-      month += Number(expense.amount);
+      Swal.fire({
+        icon: "error",
+        title: "Delete Failed",
+        text: error.message,
+      });
     }
-  });
+  },
 
-  document.getElementById("todayExpense").innerText = `₹${today}`;
+  // -----------------------------
+  // Edit Expense
+  // -----------------------------
+  editExpense(expenseId) {
+    console.log("Editing ID:", expenseId);
+    console.log("Expenses:", AppState.expenses);
 
-  document.getElementById("weekExpense").innerText = `₹${week}`;
+    const expense = AppState.expenses.find((item) => item.id === expenseId);
 
-  document.getElementById("monthExpense").innerText = `₹${month}`;
+    console.log("Found expense:", expense);
 
-  document.getElementById("totalExpense").innerText = `₹${total}`;
-}
+    if (!expense) {
+      Swal.fire("Error", "Expense not found.", "error");
+      return;
+    }
 
-// -----------------------------
-// Clear Form
-// -----------------------------
-function clearForm() {
-  document.getElementById("expenseTitle").value = "";
+    document.getElementById("expenseTitle").value = expense.title;
+    document.getElementById("expenseAmount").value = expense.amount;
+    const category = Utils.getCategory(expense.category);
 
-  document.getElementById("expenseAmount").value = "";
+    document.getElementById("expenseCategory").value = category
+      ? category.id
+      : "";
+    document.getElementById("expenseDate").value = expense.date;
+    document.getElementById("expenseNotes").value = expense.notes || "";
 
-  document.getElementById("expenseCategory").value = "";
+    AppState.editingExpenseId = expense.id;
 
-  document.getElementById("expenseDate").value = "";
-
-  document.getElementById("expenseNotes").value = "";
-}
+    document.getElementById("saveExpenseBtn").textContent = "Update Expense";
+  },
+};

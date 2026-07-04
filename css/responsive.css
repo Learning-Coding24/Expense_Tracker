@@ -490,175 +490,118 @@ body {
 
   cursor: pointer;
 }
-.expense-item {
-  display: flex;
+/* ==========================
+   Large Tablets
+========================== */
 
-  justify-content: space-between;
+@media (max-width: 1024px) {
+  .container {
+    width: 95%;
+  }
 
-  align-items: center;
-
-  padding: 18px;
-
-  margin-bottom: 15px;
-
-  background: #fff;
-
-  border-radius: 15px;
-
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  .cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
-.expense-left {
-  display: flex;
+/* ==========================
+   Tablets
+========================== */
 
-  align-items: center;
+@media (max-width: 768px) {
+  .topbar {
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+    text-align: center;
+  }
 
-  gap: 15px;
+  .brand {
+    justify-content: center;
+  }
+
+  .user-panel {
+    flex-direction: column;
+  }
+
+  .cards {
+    grid-template-columns: 1fr;
+  }
+
+  .expense-form {
+    padding: 20px;
+  }
+
+  .section-title {
+    font-size: 24px;
+  }
+
+  #userPhoto {
+    width: 70px;
+    height: 70px;
+  }
 }
 
-.expense-right {
-  display: flex;
+/* ==========================
+   Mobile
+========================== */
 
-  align-items: center;
+@media (max-width: 480px) {
+  body {
+    font-size: 14px;
+  }
 
-  gap: 15px;
-}
+  .container {
+    width: 95%;
+    margin: 15px auto;
+  }
 
-.expense-icon {
-  width: 50px;
+  .login-card {
+    padding: 30px 20px;
+  }
 
-  height: 50px;
+  .brand {
+    font-size: 22px;
+  }
 
-  border-radius: 50%;
+  .section-title {
+    font-size: 20px;
+  }
 
-  display: flex;
+  .card {
+    padding: 20px;
+  }
 
-  justify-content: center;
+  .card h2 {
+    font-size: 24px;
+  }
 
-  align-items: center;
+  .expense-form input,
+  .expense-form select,
+  .expense-form textarea,
+  #saveExpenseBtn {
+    font-size: 15px;
+  }
 
-  color: #fff;
+  .expense-item {
+    flex-direction: column;
 
-  font-size: 20px;
-}
+    align-items: flex-start;
 
-.expense-item h3 {
-  margin-bottom: 5px;
+    gap: 10px;
+  }
 
-  font-size: 17px;
-}
+  .expense-item div:last-child {
+    width: 100%;
 
-.expense-item small {
-  color: #888;
-}
+    display: flex;
 
-.delete-btn {
-  background: #ef4444;
+    justify-content: space-between;
 
-  color: #fff;
+    align-items: center;
+  }
 
-  border: none;
-
-  padding: 10px 12px;
-
-  border-radius: 10px;
-
-  cursor: pointer;
-
-  transition: 0.3s;
-}
-
-.delete-btn:hover {
-  transform: scale(1.05);
-}
-
-.empty-state {
-  text-align: center;
-
-  padding: 60px 20px;
-
-  color: #888;
-}
-
-.empty-state i {
-  font-size: 60px;
-
-  margin-bottom: 15px;
-
-  color: #4f46e5;
-}
-
-.empty-state h3 {
-  margin-bottom: 10px;
-}
-.charts-section {
-  margin-top: 40px;
-}
-
-.chart-grid {
-  display: grid;
-
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-
-  gap: 25px;
-}
-
-.chart-card {
-  background: #fff;
-
-  padding: 20px;
-
-  border-radius: 20px;
-
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-}
-
-.chart-card canvas {
-  margin-top: 20px;
-
-  max-height: 350px;
-}
-/* Expense Action Buttons */
-.expense-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.edit-btn,
-.delete-btn {
-  width: 36px;
-  height: 36px;
-  border: none;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.edit-btn {
-  background: #3b82f6;
-  color: #fff;
-}
-
-.edit-btn:hover {
-  background: #2563eb;
-  transform: translateY(-2px);
-}
-
-.delete-btn {
-  background: #ef4444;
-  color: #fff;
-}
-
-.delete-btn:hover {
-  background: #dc2626;
-  transform: translateY(-2px);
-}
-
-.edit-btn i,
-.delete-btn i {
-  font-size: 14px;
+  .logout-btn {
+    width: 100%;
+  }
 }

@@ -8,6 +8,7 @@
 
     <!-- CSS -->
     <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/responsive.css" />
 
     <!-- Google Font -->
     <link
@@ -140,27 +141,7 @@
 
             <input id="expenseAmount" type="number" placeholder="Amount" />
 
-            <select id="expenseCategory">
-              <option value="">Select Category</option>
-
-              <option>Food</option>
-
-              <option>Travel</option>
-
-              <option>Shopping</option>
-
-              <option>Bills</option>
-
-              <option>Medical</option>
-
-              <option>Entertainment</option>
-
-              <option>Education</option>
-
-              <option>Investment</option>
-
-              <option>Others</option>
-            </select>
+            <select id="expenseCategory"></select>
 
             <input id="expenseDate" type="date" />
 
@@ -175,6 +156,21 @@
         </section>
 
         <!-- RECENT EXPENSES -->
+        <section class="charts-section">
+          <h2 class="section-title">Expense Analytics</h2>
+
+          <div class="chart-grid">
+            <div class="chart-card">
+              <h3>Category Wise</h3>
+              <canvas id="categoryChart"></canvas>
+            </div>
+
+            <div class="chart-card">
+              <h3>Monthly Trend</h3>
+              <canvas id="monthlyChart"></canvas>
+            </div>
+          </div>
+        </section>
 
         <section>
           <h2 class="section-title">
@@ -194,15 +190,7 @@
 
         <!-- CHARTS -->
 
-        <section>
-          <h2 class="section-title">
-            <i class="fa-solid fa-chart-pie"></i>
-
-            Charts
-          </h2>
-
-          <div class="chart-placeholder">Charts will be added in Step 10</div>
-        </section>
+        <!-- -->
       </div>
     </div>
 
@@ -214,16 +202,18 @@
 
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <!-- Firebase Config -->
 
     <script src="firebase/firebase-config.js"></script>
 
     <!-- Application -->
 
+    <script src="js/state.js"></script>
     <script src="js/constants.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/firestore.js"></script>
-
     <script src="js/auth.js"></script>
     <script src="js/expenses.js"></script>
     <script src="js/charts.js"></script>
