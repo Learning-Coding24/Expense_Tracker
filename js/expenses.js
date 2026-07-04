@@ -169,6 +169,7 @@ const ExpenseController = {
     }
 
     document.getElementById("expenseTitle").value = expense.title;
+
     document.getElementById("expenseAmount").value = expense.amount;
     const category = Utils.getCategory(expense.category);
 
@@ -180,6 +181,17 @@ const ExpenseController = {
 
     AppState.editingExpenseId = expense.id;
 
-    document.getElementById("saveExpenseBtn").textContent = "Update Expense";
+    const saveBtn = document.getElementById("saveExpenseBtn");
+    saveBtn.innerHTML =
+      '<i class="fa-solid fa-pen-to-square"></i> Update Expense';
+
+    // Scroll the form into view
+    document.querySelector(".expense-form").scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+
+    // Focus the first field
+    document.getElementById("expenseTitle").focus();
   },
 };
