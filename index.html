@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Expense Tracker</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css" />
+
+    <!-- Google Font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+
+    <!-- Animate CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  </head>
+
+  <body>
+    <!-- ================= LOGIN SCREEN ================= -->
+
+    <div id="loginSection" class="login-screen">
+      <div class="login-card animate__animated animate__fadeInDown">
+        <div class="logo">
+          <i class="fa-solid fa-wallet"></i>
+        </div>
+
+        <h1>Expense Tracker</h1>
+
+        <p>Track every rupee beautifully</p>
+
+        <button id="googleLoginBtn" class="google-btn">
+          <i class="fa-brands fa-google"></i>
+
+          Continue with Google
+        </button>
+      </div>
+    </div>
+
+    <!-- ================= APPLICATION ================= -->
+
+    <div id="app" style="display: none">
+      <div class="container">
+        <!-- HEADER -->
+
+        <header class="topbar">
+          <div class="brand">
+            <i class="fa-solid fa-wallet"></i>
+
+            <span>Expense Tracker</span>
+          </div>
+
+          <div class="user-panel">
+            <img id="userPhoto" src="" alt="User" />
+
+            <div class="user-details">
+              <h3 id="userName"></h3>
+
+              <p id="userEmail"></p>
+            </div>
+
+            <button id="logoutBtn" class="logout-btn">
+              <i class="fa-solid fa-right-from-bracket"></i>
+
+              Logout
+            </button>
+          </div>
+        </header>
+
+        <!-- DASHBOARD -->
+
+        <section>
+          <h2 class="section-title">
+            <i class="fa-solid fa-chart-line"></i>
+
+            Dashboard
+          </h2>
+
+          <div class="cards">
+            <div class="card today">
+              <i class="fa-solid fa-calendar-day"></i>
+
+              <h3>Today</h3>
+
+              <h2 id="todayExpense">₹0</h2>
+            </div>
+
+            <div class="card week">
+              <i class="fa-solid fa-calendar-week"></i>
+
+              <h3>This Week</h3>
+
+              <h2 id="weekExpense">₹0</h2>
+            </div>
+
+            <div class="card month">
+              <i class="fa-solid fa-calendar-days"></i>
+
+              <h3>This Month</h3>
+
+              <h2 id="monthExpense">₹0</h2>
+            </div>
+
+            <div class="card total">
+              <i class="fa-solid fa-wallet"></i>
+
+              <h3>Total</h3>
+
+              <h2 id="totalExpense">₹0</h2>
+            </div>
+          </div>
+        </section>
+
+        <!-- ADD EXPENSE -->
+
+        <section>
+          <h2 class="section-title">
+            <i class="fa-solid fa-circle-plus"></i>
+
+            Add Expense
+          </h2>
+
+          <div class="expense-form">
+            <input id="expenseTitle" type="text" placeholder="Expense Title" />
+
+            <input id="expenseAmount" type="number" placeholder="Amount" />
+
+            <select id="expenseCategory">
+              <option value="">Select Category</option>
+
+              <option>Food</option>
+
+              <option>Travel</option>
+
+              <option>Shopping</option>
+
+              <option>Bills</option>
+
+              <option>Medical</option>
+
+              <option>Entertainment</option>
+
+              <option>Education</option>
+
+              <option>Investment</option>
+
+              <option>Others</option>
+            </select>
+
+            <input id="expenseDate" type="date" />
+
+            <textarea id="expenseNotes" rows="4" placeholder="Notes"></textarea>
+
+            <button id="saveExpenseBtn">
+              <i class="fa-solid fa-floppy-disk"></i>
+
+              Save Expense
+            </button>
+          </div>
+        </section>
+
+        <!-- RECENT EXPENSES -->
+
+        <section>
+          <h2 class="section-title">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+
+            Recent Expenses
+          </h2>
+
+          <div id="expenseList" class="expense-list">
+            <div class="empty-state">
+              <i class="fa-solid fa-receipt"></i>
+
+              <p>No expenses added yet.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- CHARTS -->
+
+        <section>
+          <h2 class="section-title">
+            <i class="fa-solid fa-chart-pie"></i>
+
+            Charts
+          </h2>
+
+          <div class="chart-placeholder">Charts will be added in Step 10</div>
+        </section>
+      </div>
+    </div>
+
+    <!-- Firebase -->
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+    <!-- Firebase Config -->
+
+    <script src="firebase/firebase-config.js"></script>
+
+    <!-- Application -->
+
+    <script src="js/constants.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/firestore.js"></script>
+
+    <script src="js/auth.js"></script>
+    <script src="js/expenses.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>
