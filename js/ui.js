@@ -9,6 +9,8 @@ const UI = {
   showLogin() {
     document.getElementById("loginSection").style.display = "flex";
     document.getElementById("app").style.display = "none";
+
+    UI.closeMobileMenu();
   },
 
   // -----------------------------
@@ -18,12 +20,54 @@ const UI = {
     document.getElementById("loginSection").style.display = "none";
     document.getElementById("app").style.display = "block";
 
+    // Desktop Header
     document.getElementById("userName").textContent = user.displayName || "";
 
     document.getElementById("userEmail").textContent = user.email || "";
 
     document.getElementById("userPhoto").src =
       user.photoURL || "https://via.placeholder.com/60";
+
+    // Mobile Menu
+    const mobilePhoto = document.getElementById("mobileUserPhoto");
+    const mobileName = document.getElementById("mobileUserName");
+    const mobileEmail = document.getElementById("mobileUserEmail");
+
+    if (mobilePhoto) {
+      mobilePhoto.src = user.photoURL || "https://via.placeholder.com/60";
+    }
+
+    if (mobileName) {
+      mobileName.textContent = user.displayName || "";
+    }
+
+    if (mobileEmail) {
+      mobileEmail.textContent = user.email || "";
+    }
+
+    UI.closeMobileMenu();
+  },
+
+  // -----------------------------
+  // Mobile Menu
+  // -----------------------------
+  initMobileMenu() {
+    const menuBtn = document.getElementById("menuToggle");
+    const mobileMenu = document.getElementById("mobileMenu");
+
+    if (!menuBtn || !mobileMenu) return;
+
+    menuBtn.addEventListener("click", () => {
+      mobileMenu.classList.toggle("open");
+    });
+  },
+
+  closeMobileMenu() {
+    const mobileMenu = document.getElementById("mobileMenu");
+
+    if (mobileMenu) {
+      mobileMenu.classList.remove("open");
+    }
   },
 
   // -----------------------------
@@ -61,28 +105,19 @@ const UI = {
 
     if (AppState.expenses.length === 0) {
       container.innerHTML = `
-
-                <div class="empty-state">
-
-                    <i class="fa-solid fa-wallet"></i>
-
-                    <h3>No Expenses Found</h3>
-
-                    <p>Add your first expense.</p>
-
-                </div>
-
-            `;
-
+        <div class="empty-state">
+            <i class="fa-solid fa-wallet"></i>
+            <h3>No Expenses Found</h3>
+            <p>Add your first expense.</p>
+        </div>
+      `;
       return;
     }
 
     AppState.expenses.forEach((expense) => {
       const category = Utils.getCategory(expense.category) || {
         name: expense.category,
-
         icon: "fa-wallet",
-
         color: "#7F8C8D",
       };
 
@@ -91,69 +126,66 @@ const UI = {
       card.className = "expense-item";
 
       card.innerHTML = `
+        <div class="expense-left">
 
-                <div class="expense-left">
+            <div class="expense-icon" style="background:${category.color}">
+                <i class="fa-solid ${category.icon}"></i>
+            </div>
 
-                    <div
-                        class="expense-icon"
-                        style="background:${category.color}">
+            <div>
+                <h3>${expense.title}</h3>
 
-                        <i class="fa-solid ${category.icon}"></i>
+                <small>
+                    ${category.name}
+                    •
+                    ${Utils.formatDate(expense.date)}
+                </small>
+            </div>
 
-                    </div>
+        </div>
 
-                    <div>
+        <div class="expense-right">
 
-                        <h3>${expense.title}</h3>
+            <strong>
+                ${Utils.formatCurrency(expense.amount)}
+            </strong>
 
-                        <small>
+            <div class="expense-actions">
 
-                            ${category.name}
+                <button
+                    class="edit-btn"
+                    data-id="${expense.id}"
+                    title="Edit Expense">
 
-                            •
+                    <i class="fas fa-pen"></i>
 
-                            ${Utils.formatDate(expense.date)}
+                </button>
 
-                        </small>
+                <button
+                    class="delete-btn"
+                    data-id="${expense.id}"
+                    title="Delete Expense">
 
-                    </div>
+                    <i class="fas fa-trash"></i>
 
-                </div>
+                </button>
 
-                <div class="expense-right">
+            </div>
 
-                    <strong>
-
-                        ${Utils.formatCurrency(expense.amount)}
-
-                    </strong>
-
-<div class="expense-actions">
-    <button class="edit-btn" data-id="${expense.id}" title="Edit Expense">
-        <i class="fas fa-pen"></i>
-    </button>
-
-    <button class="delete-btn" data-id="${expense.id}" title="Delete Expense">
-        <i class="fas fa-trash"></i>
-    </button>
-</div>
-
-                </div>
-
-            `;
+        </div>
+      `;
 
       container.appendChild(card);
     });
 
-    // Edit button events
+    // Edit Events
     document.querySelectorAll(".edit-btn").forEach((button) => {
       button.addEventListener("click", () => {
-        console.log("Edit clicked:", button.dataset.id);
         ExpenseController.editExpense(button.dataset.id);
       });
     });
 
-    // Delete button events
+    // Delete Events
     document.querySelectorAll(".delete-btn").forEach((button) => {
       button.addEventListener("click", () => {
         ExpenseController.deleteExpense(button.dataset.id);
@@ -161,3 +193,10 @@ const UI = {
     });
   },
 };
+
+// -----------------------------
+// Initialize Mobile Menu
+// -----------------------------
+document.addEventListener("DOMContentLoaded", () => {
+  UI.initMobileMenu();
+});

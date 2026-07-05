@@ -662,3 +662,105 @@ body {
 .delete-btn i {
   font-size: 14px;
 }
+
+/* ======================================
+   Mobile Navigation
+====================================== */
+
+.hamburger-btn {
+  display: none;
+  border: none;
+  background: transparent;
+  color: #4f46e5;
+  font-size: 22px;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.mobile-menu {
+  display: none;
+}
+
+.mobile-user {
+  text-align: center;
+}
+
+.mobile-user img {
+  width: 75px;
+  height: 75px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 10px;
+  border: 3px solid #4f46e5;
+}
+
+.mobile-user h3 {
+  margin: 8px 0 4px;
+}
+
+.mobile-user p {
+  font-size: 13px;
+  color: #666;
+  word-break: break-word;
+}
+
+/* Mobile Only */
+
+@media (max-width: 768px) {
+  .hamburger-btn {
+    display: block;
+  }
+
+  .mobile-menu {
+    display: none;
+    background: #fff;
+    border-radius: 18px;
+    margin: 15px;
+    padding: 25px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+
+    animation: fadeInDown 0.25s ease;
+  }
+
+  .mobile-menu.open {
+    display: block;
+  }
+
+  /* ===========================
+   Mobile Header
+=========================== */
+
+  /* Hide desktop profile */
+  .user-panel {
+    display: none;
+  }
+
+  /* Topbar */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+  }
+
+  /* Brand */
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .brand span {
+    font-size: 1.6rem;
+  }
+
+  /* Hamburger */
+  .hamburger-btn {
+    display: none;
+  }
+
+  /* Mobile menu spacing */
+  .mobile-menu {
+    margin: 0 15px 20px;
+  }
+}

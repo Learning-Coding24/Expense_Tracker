@@ -3,18 +3,32 @@
 // ======================================
 
 const AuthController = {
+  // -----------------------------
+  // Initialize Authentication
+  // -----------------------------
   init() {
+    // Google Login
     const loginBtn = document.getElementById("googleLoginBtn");
-    const logoutBtn = document.getElementById("logoutBtn");
 
     if (loginBtn) {
       loginBtn.addEventListener("click", AuthController.login);
     }
 
+    // Desktop Logout
+    const logoutBtn = document.getElementById("logoutBtn");
+
     if (logoutBtn) {
       logoutBtn.addEventListener("click", AuthController.logout);
     }
 
+    // Mobile Logout
+    const mobileLogoutBtn = document.getElementById("mobileLogoutBtn");
+
+    if (mobileLogoutBtn) {
+      mobileLogoutBtn.addEventListener("click", AuthController.logout);
+    }
+
+    // Firebase Auth Listener
     auth.onAuthStateChanged(AuthController.handleAuthState);
   },
 
@@ -23,23 +37,15 @@ const AuthController = {
   // -----------------------------
   async login() {
     try {
-      Utils.showLoading("Signing in...");
+      const provider = new firebase.auth.GoogleAuthProvider();
 
       await auth.signInWithPopup(provider);
-
-      Utils.hideLoading();
-
-      Utils.showToast("success", "Login Successful");
     } catch (error) {
-      Utils.hideLoading();
-
       console.error(error);
 
       Swal.fire({
         icon: "error",
-
         title: "Login Failed",
-
         text: error.message,
       });
     }
@@ -49,54 +55,39 @@ const AuthController = {
   // Logout
   // -----------------------------
   async logout() {
-    const result = await Swal.fire({
-      title: "Logout?",
-
-      text: "Do you want to logout?",
-
-      icon: "question",
-
-      showCancelButton: true,
-
-      confirmButtonText: "Logout",
-
-      confirmButtonColor: "#4F46E5",
-
-      cancelButtonColor: "#EF4444",
-    });
-
-    if (!result.isConfirmed) return;
-
     try {
       await auth.signOut();
 
-      Utils.showToast("success", "Logged Out");
+      UI.closeMobileMenu();
+
+      UI.showLogin();
+
+      Utils.showToast("success", "Logged out successfully.");
     } catch (error) {
       console.error(error);
 
       Swal.fire({
         icon: "error",
-
         title: "Logout Failed",
-
         text: error.message,
       });
     }
   },
 
   // -----------------------------
-  // Authentication State
+  // Auth State Changed
   // -----------------------------
   async handleAuthState(user) {
-    AppState.currentUser = user;
-
     if (!user) {
+      AppState.currentUser = null;
       AppState.expenses = [];
 
       UI.showLogin();
 
       return;
     }
+
+    AppState.currentUser = user;
 
     UI.showApp(user);
 
@@ -106,9 +97,7 @@ const AuthController = {
       AppState.expenses = await FirestoreService.getExpenses();
 
       UI.renderDashboard();
-
       UI.renderExpenses();
-
       Charts.renderAll();
 
       Utils.hideLoading();
@@ -119,9 +108,7 @@ const AuthController = {
 
       Swal.fire({
         icon: "error",
-
         title: "Unable to load expenses",
-
         text: error.message,
       });
     }

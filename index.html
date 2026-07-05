@@ -60,28 +60,48 @@
         <!-- HEADER -->
 
         <header class="topbar">
-          <div class="brand">
-            <i class="fa-solid fa-wallet"></i>
+          <div class="brand-section">
+            <button id="menuToggle" class="hamburger-btn">
+              <i class="fa-solid fa-bars"></i>
+            </button>
 
-            <span>Expense Tracker</span>
+            <div class="brand">
+              <i class="fa-solid fa-wallet"></i>
+              <span>Expense Tracker</span>
+            </div>
           </div>
 
+          <!-- Desktop User Panel -->
           <div class="user-panel">
             <img id="userPhoto" src="" alt="User" />
 
             <div class="user-details">
               <h3 id="userName"></h3>
-
               <p id="userEmail"></p>
             </div>
 
             <button id="logoutBtn" class="logout-btn">
               <i class="fa-solid fa-right-from-bracket"></i>
-
               Logout
             </button>
           </div>
         </header>
+        <!-- Mobile Navigation -->
+
+        <div id="mobileMenu" class="mobile-menu">
+          <div class="mobile-user">
+            <img id="mobileUserPhoto" src="" alt="User" />
+
+            <h3 id="mobileUserName"></h3>
+
+            <p id="mobileUserEmail"></p>
+
+            <button id="mobileLogoutBtn" class="logout-btn">
+              <i class="fa-solid fa-right-from-bracket"></i>
+              Logout
+            </button>
+          </div>
+        </div>
 
         <!-- DASHBOARD -->
 

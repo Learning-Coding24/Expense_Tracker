@@ -540,6 +540,43 @@ body {
     width: 70px;
     height: 70px;
   }
+
+  /* ==========================
+   Mobile Header
+========================== */
+
+  /* Hide desktop user section */
+  .user-panel {
+    display: none !important;
+  }
+
+  /* Show hamburger */
+  .hamburger-btn {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Header layout */
+  .brand-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .topbar {
+    justify-content: flex-start;
+    padding: 18px;
+  }
+
+  .brand {
+    flex: 1;
+  }
+
+  .brand span {
+    font-size: 1.5rem;
+  }
 }
 
 /* ==========================
@@ -603,5 +640,188 @@ body {
 
   .logout-btn {
     width: 100%;
+  }
+}
+/* ==========================================
+   TABLETS (≤992px)
+========================================== */
+@media (max-width: 992px) {
+  .container {
+    padding: 18px;
+  }
+
+  .cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+
+  .chart-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================
+   MOBILE (≤768px)
+========================================== */
+@media (max-width: 768px) {
+  .container {
+    padding: 14px;
+  }
+
+  /* ---------- Header ---------- */
+
+  .topbar {
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 18px;
+  }
+
+  .brand {
+    font-size: 1.7rem;
+  }
+
+  .user-panel {
+    width: 100%;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    gap: 12px;
+  }
+
+  #userPhoto {
+    width: 64px;
+    height: 64px;
+  }
+
+  .logout-btn {
+    width: 180px;
+  }
+
+  /* ---------- Dashboard ---------- */
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+
+  .card {
+    padding: 20px 12px;
+    min-height: 150px;
+  }
+
+  .card h2 {
+    font-size: 1.9rem;
+  }
+
+  .card h3 {
+    font-size: 1rem;
+  }
+
+  /* ---------- Form ---------- */
+
+  .expense-form {
+    padding: 18px;
+  }
+
+  .expense-form input,
+  .expense-form select,
+  .expense-form textarea {
+    font-size: 15px;
+  }
+
+  /* ---------- Charts ---------- */
+
+  .chart-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .chart-card {
+    padding: 15px;
+  }
+
+  /* ---------- Expense Card ---------- */
+
+  .expense-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .expense-right {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .expense-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .expense-actions button {
+    width: 38px;
+    height: 38px;
+  }
+
+  /* ---------- Titles ---------- */
+
+  .section-title {
+    font-size: 1.7rem;
+  }
+}
+
+/* ==========================================
+   SMALL MOBILE (≤480px)
+========================================== */
+
+@media (max-width: 480px) {
+  .container {
+    padding: 10px;
+  }
+
+  .cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .card {
+    padding: 16px 10px;
+    min-height: 130px;
+  }
+
+  .card i {
+    font-size: 1.8rem;
+  }
+
+  .card h3 {
+    font-size: 0.9rem;
+  }
+
+  .card h2 {
+    font-size: 1.5rem;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+  }
+
+  .expense-form {
+    padding: 15px;
+  }
+
+  .expense-item {
+    padding: 15px;
+  }
+
+  .expense-left h3 {
+    font-size: 1rem;
+  }
+
+  .expense-right strong {
+    font-size: 1.1rem;
   }
 }
