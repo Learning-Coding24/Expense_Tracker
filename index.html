@@ -1,243 +1,2429 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="h-full">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=5.0"
+    />
+    <title>Family Budget & Expense Tracker</title>
 
-    <title>Expense Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Plus Jakarta Sans", "Poppins", "Inter", "sans-serif"],
+            },
+            colors: {
+              brand: {
+                50: "#f5f3ff",
+                100: "#ede9fe",
+                500: "#6366f1",
+                600: "#4f46e5",
+                700: "#4338ca",
+                900: "#312e81",
+              },
+              darkBg: "#0b0f19",
+              panelBg: "rgba(17, 24, 39, 0.7)",
+            },
+          },
+        },
+      };
+    </script>
 
-    <!-- CSS -->
-    <link rel="stylesheet" href="css/style.css" />
-    <link rel="stylesheet" href="css/responsive.css" />
-
-    <!-- Google Font -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;750&display=swap"
       rel="stylesheet"
     />
-
-    <!-- Font Awesome -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     />
-
-    <!-- Animate CSS -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
-    />
-
-    <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  </head>
-
-  <body>
-    <!-- ================= LOGIN SCREEN ================= -->
-
-    <div id="loginSection" class="login-screen">
-      <div class="login-card animate__animated animate__fadeInDown">
-        <div class="logo">
-          <i class="fa-solid fa-wallet"></i>
-        </div>
-
-        <h1>Expense Tracker</h1>
-
-        <p>Track every rupee beautifully</p>
-
-        <button id="googleLoginBtn" class="google-btn">
-          <i class="fa-brands fa-google"></i>
-
-          Continue with Google
-        </button>
-      </div>
-    </div>
-
-    <!-- ================= APPLICATION ================= -->
-
-    <div id="app" style="display: none">
-      <div class="container">
-        <!-- HEADER -->
-
-        <header class="topbar">
-          <div class="brand-section">
-            <button id="menuToggle" class="hamburger-btn">
-              <i class="fa-solid fa-bars"></i>
-            </button>
-
-            <div class="brand">
-              <i class="fa-solid fa-wallet"></i>
-              <span>Expense Tracker</span>
-            </div>
-          </div>
-
-          <!-- Desktop User Panel -->
-          <div class="user-panel">
-            <img id="userPhoto" src="" alt="User" />
-
-            <div class="user-details">
-              <h3 id="userName"></h3>
-              <p id="userEmail"></p>
-            </div>
-
-            <button id="logoutBtn" class="logout-btn">
-              <i class="fa-solid fa-right-from-bracket"></i>
-              Logout
-            </button>
-          </div>
-        </header>
-        <!-- Mobile Navigation -->
-
-        <div id="mobileMenu" class="mobile-menu">
-          <div class="mobile-user">
-            <img id="mobileUserPhoto" src="" alt="User" />
-
-            <h3 id="mobileUserName"></h3>
-
-            <p id="mobileUserEmail"></p>
-
-            <button id="mobileLogoutBtn" class="logout-btn">
-              <i class="fa-solid fa-right-from-bracket"></i>
-              Logout
-            </button>
-          </div>
-        </div>
-
-        <!-- DASHBOARD -->
-
-        <section>
-          <h2 class="section-title">
-            <i class="fa-solid fa-chart-line"></i>
-
-            Dashboard
-          </h2>
-
-          <div class="cards">
-            <div class="card today">
-              <i class="fa-solid fa-calendar-day"></i>
-
-              <h3>Today</h3>
-
-              <h2 id="todayExpense">₹0</h2>
-            </div>
-
-            <div class="card week">
-              <i class="fa-solid fa-calendar-week"></i>
-
-              <h3>This Week</h3>
-
-              <h2 id="weekExpense">₹0</h2>
-            </div>
-
-            <div class="card month">
-              <i class="fa-solid fa-calendar-days"></i>
-
-              <h3>This Month</h3>
-
-              <h2 id="monthExpense">₹0</h2>
-            </div>
-
-            <div class="card total">
-              <i class="fa-solid fa-wallet"></i>
-
-              <h3>Total</h3>
-
-              <h2 id="totalExpense">₹0</h2>
-            </div>
-          </div>
-        </section>
-
-        <!-- ADD EXPENSE -->
-
-        <section>
-          <h2 class="section-title">
-            <i class="fa-solid fa-circle-plus"></i>
-
-            Add Expense
-          </h2>
-
-          <div class="expense-form">
-            <input id="expenseTitle" type="text" placeholder="Expense Title" />
-
-            <input id="expenseAmount" type="number" placeholder="Amount" />
-
-            <select id="expenseCategory"></select>
-
-            <input id="expenseDate" type="date" />
-
-            <textarea id="expenseNotes" rows="4" placeholder="Notes"></textarea>
-
-            <button id="saveExpenseBtn">
-              <i class="fa-solid fa-floppy-disk"></i>
-
-              Save Expense
-            </button>
-          </div>
-        </section>
-
-        <!-- RECENT EXPENSES -->
-        <section class="charts-section">
-          <h2 class="section-title">Expense Analytics</h2>
-
-          <div class="chart-grid">
-            <div class="chart-card">
-              <h3>Category Wise</h3>
-              <canvas id="categoryChart"></canvas>
-            </div>
-
-            <div class="chart-card">
-              <h3>Monthly Trend</h3>
-              <canvas id="monthlyChart"></canvas>
-            </div>
-          </div>
-        </section>
-
-        <section>
-          <h2 class="section-title">
-            <i class="fa-solid fa-clock-rotate-left"></i>
-
-            Recent Expenses
-          </h2>
-
-          <div id="expenseList" class="expense-list">
-            <div class="empty-state">
-              <i class="fa-solid fa-receipt"></i>
-
-              <p>No expenses added yet.</p>
-            </div>
-          </div>
-        </section>
-
-        <!-- CHARTS -->
-
-        <!-- -->
-      </div>
-    </div>
-
-    <!-- Firebase -->
-
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- Firebase Config -->
+    <style>
+      body {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #0b0f19 75%);
+        -webkit-font-smoothing: antialiased;
+        overflow-x: hidden;
+      }
 
-    <script src="firebase/firebase-config.js"></script>
+      .glass-panel {
+        background: rgba(15, 23, 42, 0.45);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
 
-    <!-- Application -->
+      .glass-card {
+        background: rgba(30, 41, 59, 0.35);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.3);
+      }
 
-    <script src="js/state.js"></script>
-    <script src="js/constants.js"></script>
-    <script src="js/utils.js"></script>
-    <script src="js/firestore.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/expenses.js"></script>
-    <script src="js/charts.js"></script>
-    <script src="js/ui.js"></script>
-    <script src="js/app.js"></script>
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: rgba(15, 23, 42, 0.3);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(99, 102, 241, 0.3);
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(99, 102, 241, 0.6);
+      }
+
+      .toggle-slider {
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+    </style>
+  </head>
+  <body class="min-h-screen text-slate-100 flex flex-col antialiased">
+    <div
+      id="toastContainer"
+      class="fixed top-5 right-5 z-50 flex flex-col gap-3 max-w-sm w-full px-4 md:px-0"
+    ></div>
+
+    <div
+      id="confirmModal"
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-sm hidden"
+    >
+      <div
+        class="glass-card w-full max-w-md p-6 rounded-3xl text-center transform scale-95 transition-all duration-300"
+      >
+        <div
+          class="w-16 h-16 bg-red-500/20 text-red-400 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl"
+        >
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <h3 class="text-xl font-bold mb-2 text-white">Delete Transaction?</h3>
+        <p class="text-slate-300 mb-6 text-sm">
+          Are you sure you want to permanently delete this expense? This will
+          recalculate both personal and family budgets instantly.
+        </p>
+        <div class="flex gap-3 justify-center">
+          <button
+            id="cancelDeleteBtn"
+            class="px-5 py-2.5 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 transition font-medium min-w-[100px]"
+          >
+            Cancel
+          </button>
+          <button
+            id="confirmDeleteBtn"
+            class="px-5 py-2.5 rounded-xl bg-red-600 text-white hover:bg-red-700 transition font-medium min-w-[100px]"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div
+      id="loginSection"
+      class="flex-1 flex flex-col items-center justify-center p-4 min-h-screen relative overflow-hidden"
+    >
+      <div
+        class="absolute w-96 h-96 bg-indigo-600/15 rounded-full blur-[120px] top-1/4 left-1/4"
+      ></div>
+      <div
+        class="absolute w-96 h-96 bg-purple-600/15 rounded-full blur-[120px] bottom-1/4 right-1/4"
+      ></div>
+
+      <div
+        class="glass-card w-full max-w-lg p-8 md:p-10 rounded-3xl text-center z-10 relative"
+      >
+        <div
+          class="w-20 h-20 mx-auto mb-6 rounded-3xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-indigo-600 flex items-center justify-center text-white text-3xl shadow-xl shadow-indigo-500/10"
+        >
+          <i class="fa-solid fa-people-roof animate-pulse"></i>
+        </div>
+        <h1
+          class="text-3xl md:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-white via-indigo-100 to-purple-100 bg-clip-text text-transparent"
+        >
+          FamBudget Pro
+        </h1>
+        <p class="text-indigo-200/60 mt-2 mb-8 text-sm md:text-base font-light">
+          Securely collaborate, allocate budgets, and manage collective family
+          dynamics beautifully.
+        </p>
+
+        <div class="space-y-4">
+          <div
+            class="bg-slate-900/50 p-4 rounded-2xl border border-slate-800 text-left"
+          >
+            <label
+              class="block text-xs font-semibold text-indigo-300 uppercase tracking-wider mb-2.5"
+              >Your Household Profile Role</label
+            >
+            <div class="grid grid-cols-2 gap-3">
+              <label
+                class="relative flex flex-col p-4 bg-slate-800/40 hover:bg-slate-800/80 border border-slate-700 rounded-xl cursor-pointer transition text-center group"
+              >
+                <input
+                  type="radio"
+                  name="onboardRole"
+                  value="admin"
+                  checked
+                  class="absolute top-3 right-3 text-indigo-500 bg-slate-900 border-slate-700 focus:ring-indigo-500"
+                />
+                <i
+                  class="fa-solid fa-crown text-amber-400 text-lg mb-1 group-hover:scale-115 transition"
+                ></i>
+                <span class="text-xs font-bold text-white">Family Admin</span>
+                <span class="text-[10px] text-slate-400 mt-1"
+                  >Can set budgets & manage members</span
+                >
+              </label>
+              <label
+                class="relative flex flex-col p-4 bg-slate-800/40 hover:bg-slate-800/80 border border-slate-700 rounded-xl cursor-pointer transition text-center group"
+              >
+                <input
+                  type="radio"
+                  name="onboardRole"
+                  value="member"
+                  class="absolute top-3 right-3 text-indigo-500 bg-slate-900 border-slate-700 focus:ring-indigo-500"
+                />
+                <i
+                  class="fa-solid fa-user-group text-sky-400 text-lg mb-1 group-hover:scale-115 transition"
+                ></i>
+                <span class="text-xs font-bold text-white">Family Member</span>
+                <span class="text-[10px] text-slate-400 mt-1"
+                  >Can log and view combined charts</span
+                >
+              </label>
+            </div>
+          </div>
+
+          <button
+            id="googleLoginBtn"
+            class="w-full py-4 px-6 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold flex items-center justify-center gap-3 transition duration-300 shadow-md hover:shadow-indigo-500/20 active:scale-95"
+          >
+            <i class="fa-brands fa-google text-lg"></i>
+            Continue with Google
+          </button>
+
+          <div class="relative flex py-2 items-center justify-center">
+            <div class="flex-grow border-t border-slate-800"></div>
+            <span
+              class="flex-shrink mx-4 text-slate-500 text-xs uppercase tracking-widest font-semibold"
+              >Or</span
+            >
+            <div class="flex-grow border-t border-slate-800"></div>
+          </div>
+
+          <button
+            id="demoLoginBtn"
+            class="w-full py-3.5 px-6 rounded-2xl bg-slate-800/60 hover:bg-slate-700/60 text-indigo-200 font-medium flex items-center justify-center gap-3 border border-slate-700 hover:border-indigo-500/40 transition duration-300 active:scale-95"
+          >
+            <i class="fa-solid fa-wand-magic-sparkles text-indigo-400"></i>
+            Explore with Demo Sandboxed Mode
+          </button>
+        </div>
+
+        <div
+          class="mt-8 text-[11px] text-slate-500 leading-relaxed max-w-sm mx-auto"
+        >
+          Includes safe multi-device Firestore real-time cloud data binding &
+          dynamic responsive analytical metrics.
+        </div>
+      </div>
+    </div>
+
+    <div id="app" class="hidden flex-1 flex flex-col min-h-screen">
+      <header
+        class="w-full glass-panel sticky top-0 z-30 px-4 md:px-8 py-4 border-b border-slate-800/50"
+      >
+        <div
+          class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4"
+        >
+          <div class="flex items-center justify-between w-full sm:w-auto gap-4">
+            <div class="flex items-center gap-3">
+              <div
+                class="w-10 h-10 rounded-2xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center text-xl border border-indigo-500/25"
+              >
+                <i class="fa-solid fa-people-roof"></i>
+              </div>
+              <div>
+                <span
+                  class="text-lg font-extrabold tracking-tight text-white block"
+                  >FamBudget Pro</span
+                >
+                <span
+                  class="text-[10px] text-indigo-300/70 block uppercase tracking-wider font-semibold"
+                  id="headerProfileRole"
+                  >Role: Individual</span
+                >
+              </div>
+            </div>
+
+            <button
+              id="logoutBtn"
+              class="sm:hidden text-red-400 bg-red-500/10 hover:bg-red-500/20 p-2.5 rounded-xl border border-red-500/20 transition text-sm"
+            >
+              <i class="fa-solid fa-power-off"></i>
+            </button>
+          </div>
+
+          <div
+            class="bg-slate-900/80 p-1 rounded-2xl border border-slate-800 flex items-center relative w-full sm:w-80 h-12"
+          >
+            <div
+              id="toggleHighlight"
+              class="absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] bg-indigo-600/90 rounded-xl toggle-slider shadow-md shadow-indigo-600/20"
+            ></div>
+
+            <button
+              id="btnViewIndividual"
+              class="relative z-10 flex-1 text-center text-xs font-semibold h-full rounded-xl flex items-center justify-center gap-2 text-white transition-all duration-300"
+            >
+              <i class="fa-solid fa-user text-[11px]"></i>
+              <span>Individual</span>
+            </button>
+            <button
+              id="btnViewFamily"
+              class="relative z-10 flex-1 text-center text-xs font-semibold h-full rounded-xl flex items-center justify-center gap-2 text-slate-400 transition-all duration-300"
+            >
+              <i class="fa-solid fa-users text-[11px]"></i>
+              <span>Family Group</span>
+            </button>
+          </div>
+
+          <div class="hidden sm:flex items-center gap-4">
+            <div
+              id="syncStatus"
+              class="flex items-center gap-2 bg-indigo-500/10 text-indigo-300 px-3 py-1.5 rounded-full text-xs font-semibold border border-indigo-500/20"
+            >
+              <span class="relative flex h-2 w-2">
+                <span
+                  class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"
+                ></span>
+                <span
+                  class="relative inline-flex rounded-full h-2 w-2 bg-indigo-400"
+                ></span>
+              </span>
+              Sync Status
+            </div>
+
+            <div
+              class="flex items-center gap-2.5 pl-2 border-l border-slate-800"
+            >
+              <img
+                id="userPhoto"
+                src="https://placehold.co/100x100/4f46e5/ffffff?text=U"
+                alt="User Avatar"
+                class="w-9 h-9 rounded-full object-cover border border-slate-700"
+              />
+              <div class="hidden md:block text-left">
+                <h4
+                  id="userName"
+                  class="text-xs font-bold text-white max-w-[120px] truncate"
+                >
+                  Guest
+                </h4>
+                <p
+                  id="familyGroupName"
+                  class="text-[9px] text-slate-400 truncate"
+                >
+                  No Family Group
+                </p>
+              </div>
+              <button
+                id="desktopLogoutBtn"
+                class="text-slate-400 hover:text-red-400 hover:bg-red-500/10 p-2 rounded-xl transition ml-1"
+                title="Sign Out"
+              >
+                <i class="fa-solid fa-right-from-bracket"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main class="flex-1 p-4 md:p-8 space-y-8 max-w-7xl w-full mx-auto">
+        <div
+          id="familyActionBanner"
+          class="glass-card bg-indigo-500/5 border border-indigo-500/20 rounded-2xl p-5 flex flex-col md:flex-row items-center justify-between gap-4 hidden"
+        >
+          <div
+            class="flex items-center gap-4 text-center md:text-left flex-col md:flex-row"
+          >
+            <div
+              class="w-12 h-12 bg-indigo-500/20 text-indigo-400 rounded-full flex items-center justify-center shrink-0 text-xl"
+            >
+              <i class="fa-solid fa-circle-info animate-bounce"></i>
+            </div>
+            <div>
+              <h4 class="text-sm font-bold text-white">
+                Join or Initialize a Shared Family Household
+              </h4>
+              <p class="text-xs text-slate-400 mt-0.5">
+                You are currently in Solo mode. Create a group to collaborate
+                and invite family members to pool budgets.
+              </p>
+            </div>
+          </div>
+          <div class="flex gap-2.5 w-full md:w-auto justify-center">
+            <button
+              id="bannerCreateGroupBtn"
+              class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs rounded-xl transition"
+            >
+              Create Family Group
+            </button>
+          </div>
+        </div>
+
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+          <div
+            class="glass-card rounded-2xl p-6 relative overflow-hidden group hover:border-indigo-500/30 transition-all duration-300"
+          >
+            <div
+              class="absolute -right-4 -bottom-4 text-indigo-500/5 text-8xl transition-transform duration-300 group-hover:scale-110"
+            >
+              <i class="fa-solid fa-piggy-bank"></i>
+            </div>
+            <div class="flex items-center justify-between mb-4">
+              <span
+                class="text-xs font-bold text-indigo-300 uppercase tracking-wider"
+                id="budgetCardLabel"
+                >Active Budget Allocation</span
+              >
+              <button
+                id="btnSetBudget"
+                class="text-[11px] text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-600 px-2.5 py-1 rounded-lg border border-indigo-500/20 transition font-bold"
+              >
+                <i class="fa-solid fa-sliders mr-1"></i> Edit Budget
+              </button>
+            </div>
+            <div class="mt-2">
+              <h2
+                id="totalBudgetValue"
+                class="text-3xl font-extrabold text-white"
+              >
+                ₹50,000
+              </h2>
+              <div class="flex items-center gap-2 mt-2 text-xs text-slate-400">
+                <span
+                  class="text-emerald-400 font-semibold"
+                  id="budgetLimitCount"
+                  >Category Budgets Set</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="glass-card rounded-2xl p-6 relative overflow-hidden group hover:border-rose-500/30 transition-all duration-300"
+          >
+            <div
+              class="absolute -right-4 -bottom-4 text-rose-500/5 text-8xl transition-transform duration-300 group-hover:scale-110"
+            >
+              <i class="fa-solid fa-wallet"></i>
+            </div>
+            <div class="flex items-center justify-between mb-4">
+              <span
+                class="text-xs font-bold text-rose-300 uppercase tracking-wider"
+                >Total Spent (Current Month)</span
+              >
+              <div
+                class="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-400 flex items-center justify-center"
+              >
+                <i class="fa-solid fa-arrow-trend-up"></i>
+              </div>
+            </div>
+            <div class="mt-2">
+              <h2
+                id="totalSpentValue"
+                class="text-3xl font-extrabold text-white"
+              >
+                ₹0
+              </h2>
+              <div class="flex items-center gap-2 mt-2 text-xs text-slate-400">
+                <span id="spentPercentage" class="text-slate-300 font-medium"
+                  >0% of allocated budget spent</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="glass-card rounded-2xl p-6 relative overflow-hidden group hover:border-emerald-500/30 transition-all duration-300"
+          >
+            <div
+              class="absolute -right-4 -bottom-4 text-emerald-500/5 text-8xl transition-transform duration-300 group-hover:scale-110"
+            >
+              <i class="fa-solid fa-scale-balanced"></i>
+            </div>
+            <div class="flex items-center justify-between mb-4">
+              <span
+                class="text-xs font-bold text-emerald-300 uppercase tracking-wider"
+                >Remaining Balance</span
+              >
+              <div
+                class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center"
+              >
+                <i class="fa-solid fa-coins"></i>
+              </div>
+            </div>
+            <div class="mt-2">
+              <h2
+                id="remainingValue"
+                class="text-3xl font-extrabold text-emerald-400"
+              >
+                ₹50,000
+              </h2>
+              <div class="flex items-center gap-2 mt-2 text-xs text-slate-400">
+                <span
+                  id="remainingStatusText"
+                  class="text-emerald-400/80 font-medium"
+                  >Safe spending surplus limit</span
+                >
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section
+          id="familyGroupSection"
+          class="glass-card rounded-3xl p-6 space-y-6"
+        >
+          <div
+            class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-5"
+          >
+            <div class="flex items-center gap-3">
+              <div
+                class="w-9 h-9 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center"
+              >
+                <i class="fa-solid fa-people-roof"></i>
+              </div>
+              <div>
+                <h3 class="text-lg font-bold text-white">
+                  Family Household Group
+                </h3>
+                <p class="text-xs text-slate-400">
+                  Managed members participating in this shared registry pool
+                </p>
+              </div>
+            </div>
+
+            <div
+              id="adminInviteControls"
+              class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto"
+              style="display: none"
+            >
+              <input
+                id="inviteMemberEmail"
+                type="email"
+                placeholder="Enter family member email"
+                class="w-full sm:w-64 bg-slate-900/60 border border-slate-800 hover:border-slate-700 focus:border-indigo-500 focus:outline-none rounded-xl px-4 py-2.5 text-slate-100 placeholder-slate-500 transition text-xs"
+              />
+              <button
+                id="inviteMemberBtn"
+                class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition flex items-center justify-center gap-2 shrink-0"
+              >
+                <i class="fa-solid fa-plus"></i> Add Member
+              </button>
+            </div>
+          </div>
+
+          <div
+            id="familyMembersGrid"
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+          >
+            <!-- Loaded dynamically via js -->
+          </div>
+        </section>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          <div class="lg:col-span-7 space-y-6">
+            <div class="glass-card rounded-3xl p-6 space-y-6">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-9 h-9 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center"
+                  >
+                    <i class="fa-solid fa-chart-pie"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-base font-bold text-white">
+                      Analytics Cockpit
+                    </h3>
+                    <p class="text-[10px] text-slate-400">
+                      Real-time household analysis
+                    </p>
+                  </div>
+                </div>
+
+                <div
+                  class="flex items-center bg-slate-900/60 p-1 border border-slate-800 rounded-xl text-[10px]"
+                >
+                  <button
+                    id="btnTabCategory"
+                    class="px-3 py-1.5 rounded-lg font-bold bg-indigo-600 text-white transition-all duration-200"
+                  >
+                    Category Breakdown
+                  </button>
+                  <button
+                    id="btnTabBudgets"
+                    class="px-3 py-1.5 rounded-lg font-bold text-slate-400 hover:text-white transition-all duration-200"
+                  >
+                    Budget vs Spent
+                  </button>
+                </div>
+              </div>
+
+              <div
+                class="relative w-full min-h-[280px] flex items-center justify-center"
+              >
+                <div
+                  id="chartContainerCategory"
+                  class="w-full h-full max-h-[280px] relative"
+                >
+                  <canvas id="categoryChart"></canvas>
+                </div>
+                <div
+                  id="chartContainerBudgets"
+                  class="w-full h-full max-h-[280px] relative hidden"
+                >
+                  <canvas id="budgetBarChart"></canvas>
+                </div>
+              </div>
+            </div>
+
+            <div class="glass-card rounded-3xl p-6 space-y-4">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center"
+                  >
+                    <i class="fa-solid fa-sliders"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-base font-bold text-white">
+                      Category Budgets
+                    </h3>
+                    <p class="text-[10px] text-slate-400">
+                      Individual allocations & spent thresholds
+                    </p>
+                  </div>
+                </div>
+                <button
+                  id="btnToggleSetBudgetCollapse"
+                  class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-indigo-300 transition flex items-center gap-1.5"
+                >
+                  <i class="fa-solid fa-gear"></i> Set Caps
+                </button>
+              </div>
+
+              <div
+                id="budgetAllocationSettingsPanel"
+                class="p-4 bg-slate-950/40 border border-slate-800 rounded-2xl space-y-4 hidden animate__animated animate__fadeIn"
+              >
+                <h4
+                  class="text-xs font-bold text-indigo-300 uppercase tracking-wider"
+                >
+                  Allocate Category Budgets
+                </h4>
+                <div
+                  class="grid grid-cols-2 gap-3"
+                  id="categoryBudgetInputGrid"
+                >
+                  <!-- Inputs built in JavaScript dynamically -->
+                </div>
+                <button
+                  id="saveAllBudgetsBtn"
+                  class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition active:scale-95"
+                >
+                  Save All Budgets & Recalculate
+                </button>
+              </div>
+
+              <div id="categoryGaugesList" class="space-y-3.5">
+                <!-- Populated with beautiful custom visual bars via JS -->
+              </div>
+            </div>
+          </div>
+
+          <div class="lg:col-span-5 space-y-6">
+            <div class="glass-card rounded-3xl p-6 space-y-4">
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-9 h-9 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center"
+                >
+                  <i class="fa-solid fa-plus"></i>
+                </div>
+                <h3 id="formTitle" class="text-base font-bold text-white">
+                  Add New Transaction
+                </h3>
+              </div>
+
+              <form id="expenseForm" class="space-y-3" onsubmit="return false;">
+                <input type="hidden" id="editId" value="" />
+
+                <div>
+                  <label
+                    class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1"
+                    >Title / Vendor</label
+                  >
+                  <input
+                    id="expenseTitle"
+                    type="text"
+                    placeholder="e.g., Grocery Supermarket"
+                    class="w-full bg-slate-900/60 border border-slate-800 hover:border-slate-700 focus:border-indigo-500 focus:outline-none rounded-xl px-4 py-3 text-slate-100 placeholder-slate-500 transition text-xs"
+                    required
+                  />
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label
+                      class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1"
+                      >Amount (₹)</label
+                    >
+                    <input
+                      id="expenseAmount"
+                      type="number"
+                      placeholder="0.00"
+                      min="1"
+                      step="any"
+                      class="w-full bg-slate-900/60 border border-slate-800 hover:border-slate-700 focus:border-indigo-500 focus:outline-none rounded-xl px-4 py-3 text-slate-100 placeholder-slate-500 transition text-xs"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label
+                      class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1"
+                      >Date</label
+                    >
+                    <input
+                      id="expenseDate"
+                      type="date"
+                      class="w-full bg-slate-900/60 border border-slate-800 hover:border-slate-700 focus:border-indigo-500 focus:outline-none rounded-xl px-4 py-3 text-indigo-200 transition text-xs"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label
+                      class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1"
+                      >Category</label
+                    >
+                    <select
+                      id="expenseCategory"
+                      class="w-full bg-slate-900/60 border border-slate-800 hover:border-slate-700 focus:border-indigo-500 focus:outline-none rounded-xl px-3 py-3 text-slate-200 transition text-xs cursor-pointer"
+                      required
+                    >
+                      <!-- Categories populated via JS -->
+                    </select>
+                  </div>
+                  <div>
+                    <label
+                      class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1"
+                      >Scope Tag</label
+                    >
+                    <select
+                      id="expenseScope"
+                      class="w-full bg-slate-900/60 border border-slate-800 hover:border-slate-700 focus:border-indigo-500 focus:outline-none rounded-xl px-3 py-3 text-slate-200 transition text-xs cursor-pointer"
+                    >
+                      <option value="individual">👤 Individual Only</option>
+                      <option value="family" selected>👨‍👩‍👧 Family Shared</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label
+                    class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1"
+                    >Internal Memo (Optional)</label
+                  >
+                  <textarea
+                    id="expenseNotes"
+                    rows="2"
+                    placeholder="Describe receipt, payment method, etc."
+                    class="w-full bg-slate-900/60 border border-slate-800 hover:border-slate-700 focus:border-indigo-500 focus:outline-none rounded-xl px-4 py-3 text-slate-100 placeholder-slate-500 transition text-xs resize-none"
+                  ></textarea>
+                </div>
+
+                <div class="flex gap-2 pt-2">
+                  <button
+                    type="button"
+                    id="resetFormBtn"
+                    class="flex-1 py-3 px-4 rounded-xl border border-slate-800 hover:border-slate-700 text-slate-300 font-bold text-xs transition hover:bg-white/5 active:scale-95 hidden"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    id="saveExpenseBtn"
+                    class="flex-2 w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition shadow-lg hover:shadow-indigo-500/20 flex items-center justify-center gap-2 active:scale-95"
+                  >
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    <span>Log Transaction</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <div class="glass-card rounded-3xl p-6 space-y-4">
+              <div
+                class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3"
+              >
+                <div class="flex items-center gap-2.5">
+                  <div
+                    class="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center"
+                  >
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                  </div>
+                  <h3 class="text-sm font-bold text-white">
+                    Recent Log Ledger
+                  </h3>
+                </div>
+
+                <select
+                  id="filterCategory"
+                  class="bg-slate-900/60 border border-slate-800 hover:border-slate-700 focus:outline-none rounded-lg px-2 py-1 text-slate-300 text-[10px] cursor-pointer"
+                >
+                  <option value="ALL">All Categories</option>
+                </select>
+              </div>
+
+              <div
+                id="expenseList"
+                class="divide-y divide-slate-800/40 max-h-[360px] overflow-y-auto space-y-2 pr-1"
+              >
+                <!-- Filled dynamically -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+      import {
+        getAuth,
+        signInAnonymously,
+        signInWithCustomToken,
+        onAuthStateChanged,
+        signOut,
+        GoogleAuthProvider,
+        signInWithPopup,
+      } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+      import {
+        getFirestore,
+        doc,
+        getDoc,
+        setDoc,
+        updateDoc,
+        deleteDoc,
+        onSnapshot,
+        collection,
+        query,
+        where,
+        addDoc,
+        getDocs,
+      } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+      // =========================================================================
+      //  STEP 1: PASTE YOUR FIREBASE CONFIGURATION OBJECT HERE!
+      // =========================================================================
+      const firebaseConfig = {
+        apiKey: "AIzaSyAV4BAMhRhc-HALgukjvPQLnTKf6UC1PSU",
+        authDomain: "family-budget-tracker-1342c.firebaseapp.com",
+        projectId: "family-budget-tracker-1342c",
+        storageBucket: "family-budget-tracker-1342c.firebasestorage.app",
+        messagingSenderId: "1021828503893",
+        appId: "1:1021828503893:web:98eae1e5bc9ca2f948f7dc",
+        measurementId: "G-67V8YF78HD",
+      };
+      // =========================================================================
+
+      const isFirebaseConfigured = firebaseConfig.apiKey !== "YOUR_API_KEY";
+
+      const state = {
+        expenses: [],
+        budget: {
+          totalBudget: 50000,
+          categories: {
+            "Food & Dining": 15000,
+            "Utilities & Bills": 12000,
+            "Transport & Travel": 6000,
+            "Shopping & Lifestyle": 8000,
+            Entertainment: 4000,
+            "Medical & Health": 3000,
+            "Other General": 2000,
+          },
+        },
+        activeUser: null,
+        familyGroup: null,
+        isDemoMode: !isFirebaseConfigured,
+        activeView: "individual",
+        selectedDeleteId: null,
+        editingId: null,
+        filterCategory: "ALL",
+        db: null,
+        auth: null,
+        appId: "family-budget-premium",
+      };
+
+      const categoriesConfig = {
+        "Food & Dining": {
+          icon: "fa-solid fa-utensils",
+          color: "rose-400",
+          bg: "bg-rose-500/10",
+          border: "border-rose-500/20",
+          hex: "#f43f5e",
+        },
+        "Utilities & Bills": {
+          icon: "fa-solid fa-bolt",
+          color: "amber-400",
+          bg: "bg-amber-500/10",
+          border: "border-amber-500/20",
+          hex: "#f59e0b",
+        },
+        "Transport & Travel": {
+          icon: "fa-solid fa-taxi",
+          color: "sky-400",
+          bg: "bg-sky-500/10",
+          border: "border-sky-500/20",
+          hex: "#0ea5e9",
+        },
+        "Shopping & Lifestyle": {
+          icon: "fa-solid fa-bag-shopping",
+          color: "purple-400",
+          bg: "bg-purple-500/10",
+          border: "border-purple-500/20",
+          hex: "#a855f7",
+        },
+        Entertainment: {
+          icon: "fa-solid fa-ticket",
+          color: "indigo-400",
+          bg: "bg-indigo-500/10",
+          border: "border-indigo-500/20",
+          hex: "#6366f1",
+        },
+        "Medical & Health": {
+          icon: "fa-solid fa-heart-pulse",
+          color: "emerald-400",
+          bg: "bg-emerald-500/10",
+          border: "border-emerald-500/20",
+          hex: "#10b981",
+        },
+        "Other General": {
+          icon: "fa-solid fa-shapes",
+          color: "slate-400",
+          bg: "bg-slate-500/10",
+          border: "border-slate-500/20",
+          hex: "#94a3b8",
+        },
+      };
+
+      function showToast(message, type = "success") {
+        const container = document.getElementById("toastContainer");
+        if (!container) return;
+
+        const themeClasses = {
+          success: "bg-emerald-600/95 border-emerald-500/30 text-white",
+          error: "bg-red-600/95 border-red-500/30 text-white",
+          info: "bg-indigo-600/95 border-indigo-500/30 text-white",
+        };
+
+        const icons = {
+          success: "fa-circle-check",
+          error: "fa-triangle-exclamation",
+          info: "fa-circle-info",
+        };
+
+        const toast = document.createElement("div");
+        toast.className = `flex items-center gap-3 px-4 py-3.5 rounded-2xl border shadow-xl ${themeClasses[type] || themeClasses.info} transform translate-y-2 opacity-0 transition duration-300`;
+        toast.innerHTML = `
+                <i class="fa-solid ${icons[type] || icons.info} text-lg shrink-0"></i>
+                <div class="text-xs font-bold leading-relaxed">${message}</div>
+            `;
+
+        container.appendChild(toast);
+        setTimeout(
+          () => toast.classList.remove("translate-y-2", "opacity-0"),
+          10,
+        );
+        setTimeout(() => {
+          toast.classList.add("opacity-0", "translate-y-[-10px]");
+          setTimeout(() => toast.remove(), 300);
+        }, 4000);
+      }
+
+      let categoryChartInstance = null;
+      let budgetChartInstance = null;
+
+      const demoMockGroup = {
+        groupId: "demo-group-id",
+        adminId: "demo-user-1",
+        adminEmail: "admin@family.com",
+        name: "Hansen Household",
+        members: [
+          {
+            uid: "demo-user-1",
+            email: "admin@family.com",
+            displayName: "Sarah Hansen (Admin)",
+            photoURL: "https://placehold.co/100x100/6366f1/ffffff?text=SH",
+            role: "admin",
+          },
+          {
+            uid: "demo-user-2",
+            email: "member1@family.com",
+            displayName: "James Hansen",
+            photoURL: "https://placehold.co/100x100/10b981/ffffff?text=JH",
+            role: "member",
+          },
+          {
+            uid: "demo-user-3",
+            email: "member2@family.com",
+            displayName: "Lily Hansen",
+            photoURL: "https://placehold.co/100x100/f59e0b/ffffff?text=LH",
+            role: "member",
+          },
+        ],
+      };
+
+      const demoMockExpenses = [
+        {
+          id: "exp-1",
+          userId: "demo-user-1",
+          userName: "Sarah Hansen",
+          userPhoto: "https://placehold.co/100x100/6366f1/ffffff?text=SH",
+          title: "Weekly WholeFoods Grocery Run",
+          amount: 12400,
+          category: "Food & Dining",
+          date: new Date().toISOString().split("T")[0],
+          scope: "family",
+          notes: "Purchased raw foods & whole milk for children",
+        },
+        {
+          id: "exp-2",
+          userId: "demo-user-2",
+          userName: "James Hansen",
+          userPhoto: "https://placehold.co/100x100/10b981/ffffff?text=JH",
+          title: "Premium Gas Refill",
+          amount: 3200,
+          category: "Transport & Travel",
+          date: new Date(Date.now() - 86400000).toISOString().split("T")[0],
+          scope: "family",
+          notes: "Commuter car filled",
+        },
+        {
+          id: "exp-3",
+          userId: "demo-user-3",
+          userName: "Lily Hansen",
+          userPhoto: "https://placehold.co/100x100/f59e0b/ffffff?text=LH",
+          title: "Monthly Fiber Internet Bill",
+          amount: 4800,
+          category: "Utilities & Bills",
+          date: new Date().toISOString().split("T")[0],
+          scope: "family",
+          notes: "1Gbps automated direct payment auto-pay",
+        },
+        {
+          id: "exp-4",
+          userId: "demo-user-1",
+          userName: "Sarah Hansen",
+          userPhoto: "https://placehold.co/100x100/6366f1/ffffff?text=SH",
+          title: "Designer Shoes Boutique",
+          amount: 8400,
+          category: "Shopping & Lifestyle",
+          date: new Date(Date.now() - 86400000 * 3).toISOString().split("T")[0],
+          scope: "individual",
+          notes: "Personal styling purchase",
+        },
+        {
+          id: "exp-5",
+          userId: "demo-user-2",
+          userName: "James Hansen",
+          userPhoto: "https://placehold.co/100x100/10b981/ffffff?text=JH",
+          title: "Action Movie Theater IMAX",
+          amount: 1800,
+          category: "Entertainment",
+          date: new Date(Date.now() - 86400000 * 5).toISOString().split("T")[0],
+          scope: "family",
+          notes: "Snacks & popcorn tickets",
+        },
+        {
+          id: "exp-6",
+          userId: "demo-user-1",
+          userName: "Sarah Hansen",
+          userPhoto: "https://placehold.co/100x100/6366f1/ffffff?text=SH",
+          title: "Medical Consultation Clinic",
+          amount: 1500,
+          category: "Medical & Health",
+          date: new Date(Date.now() - 86400000 * 10)
+            .toISOString()
+            .split("T")[0],
+          scope: "individual",
+          notes: "Personal routine checkup",
+        },
+      ];
+
+      async function setupFirebase() {
+        try {
+          if (!isFirebaseConfigured) {
+            console.log(
+              "Firebase config not populated yet. Google sign-in disabled.",
+            );
+            return;
+          }
+
+          const app = initializeApp(firebaseConfig);
+          state.db = getFirestore(app);
+          state.auth = getAuth(app);
+
+          onAuthStateChanged(state.auth, (user) => {
+            if (user) {
+              state.isDemoMode = false;
+              setupAuthenticatedUser(user);
+            }
+          });
+        } catch (err) {
+          console.error(
+            "Firebase setup failed. Dynamic sandbox trigger available.",
+            err,
+          );
+        }
+      }
+
+      function enableDemoMode() {
+        state.isDemoMode = true;
+        state.activeUser = {
+          uid: "demo-user-1",
+          displayName: "Sarah Hansen",
+          email: "admin@family.com",
+          photoURL: "https://placehold.co/100x100/6366f1/ffffff?text=SH",
+          role:
+            document.querySelector('input[name="onboardRole"]:checked')
+              ?.value || "admin",
+        };
+
+        state.familyGroup = { ...demoMockGroup };
+        state.familyGroup.adminId = state.activeUser.uid;
+
+        const storedExpenses = localStorage.getItem("demo_fam_expenses");
+        if (storedExpenses) {
+          try {
+            state.expenses = JSON.parse(storedExpenses);
+          } catch (e) {
+            state.expenses = [...demoMockExpenses];
+          }
+        } else {
+          state.expenses = [...demoMockExpenses];
+          localStorage.setItem(
+            "demo_fam_expenses",
+            JSON.stringify(state.expenses),
+          );
+        }
+
+        const storedBudget = localStorage.getItem("demo_fam_budget");
+        if (storedBudget) {
+          try {
+            state.budget = JSON.parse(storedBudget);
+          } catch (e) {
+            // Stay default
+          }
+        }
+
+        setupVisuals();
+        renderDashboard();
+        showToast("Logged in via Demo Sandboxed Environment", "info");
+      }
+
+      async function setupAuthenticatedUser(user) {
+        state.activeUser = {
+          uid: user.uid,
+          displayName: user.displayName || "Family Core User",
+          email: user.email || "user@family.com",
+          photoURL:
+            user.photoURL ||
+            `https://placehold.co/100x100/4f46e5/ffffff?text=${(user.displayName || "U").charAt(0)}`,
+          role:
+            document.querySelector('input[name="onboardRole"]:checked')
+              ?.value || "admin",
+        };
+
+        const syncIndicator = document.getElementById("syncStatus");
+        if (syncIndicator) {
+          syncIndicator.innerHTML = `
+                    <span class="flex h-2 w-2 relative">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
+                    Cloud Database
+                `;
+          syncIndicator.className =
+            "flex items-center gap-2 bg-emerald-500/10 text-emerald-300 px-3 py-1.5 rounded-full text-xs font-semibold border border-emerald-500/20";
+        }
+
+        const groupsCollection = collection(
+          state.db,
+          "artifacts",
+          state.appId,
+          "public",
+          "data",
+          "groups",
+        );
+        const expensesCollection = collection(
+          state.db,
+          "artifacts",
+          state.appId,
+          "public",
+          "data",
+          "expenses",
+        );
+
+        try {
+          const groupSnap = await getDocs(groupsCollection);
+          let myGroup = null;
+          groupSnap.forEach((gDoc) => {
+            const data = gDoc.data();
+            if (
+              data.adminId === user.uid ||
+              (data.members && data.members.some((m) => m.email === user.email))
+            ) {
+              myGroup = { id: gDoc.id, ...data };
+            }
+          });
+
+          if (myGroup) {
+            state.familyGroup = myGroup;
+            const me = myGroup.members.find((m) => m.email === user.email);
+            if (me) {
+              state.activeUser.role = me.role;
+            }
+          } else {
+            if (state.activeUser.role === "admin") {
+              const newGroupId = crypto.randomUUID();
+              const defaultGroup = {
+                groupId: newGroupId,
+                adminId: user.uid,
+                adminEmail: user.email,
+                name: `${state.activeUser.displayName.split(" ")[0]}'s Family`,
+                members: [
+                  {
+                    uid: user.uid,
+                    email: user.email,
+                    displayName: state.activeUser.displayName,
+                    photoURL: state.activeUser.photoURL,
+                    role: "admin",
+                  },
+                ],
+              };
+
+              await setDoc(
+                doc(
+                  state.db,
+                  "artifacts",
+                  state.appId,
+                  "public",
+                  "data",
+                  "groups",
+                  newGroupId,
+                ),
+                defaultGroup,
+              );
+              state.familyGroup = { id: newGroupId, ...defaultGroup };
+              showToast(
+                `Successfully initialized ${defaultGroup.name}!`,
+                "success",
+              );
+            }
+          }
+
+          onSnapshot(expensesCollection, (snapshot) => {
+            const parsedList = [];
+            snapshot.forEach((doc) => {
+              parsedList.push({ id: doc.id, ...doc.data() });
+            });
+
+            state.expenses = parsedList
+              .filter((exp) => {
+                const matchesUser = exp.userId === state.activeUser.uid;
+                const matchesGroup =
+                  state.familyGroup &&
+                  exp.groupId === state.familyGroup.groupId;
+                return matchesUser || matchesGroup;
+              })
+              .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            renderDashboard();
+          });
+
+          const budgetDocId = state.familyGroup
+            ? state.familyGroup.groupId
+            : state.activeUser.uid;
+          onSnapshot(
+            doc(
+              state.db,
+              "artifacts",
+              state.appId,
+              "public",
+              "data",
+              "budgets",
+              budgetDocId,
+            ),
+            (bDoc) => {
+              if (bDoc.exists()) {
+                state.budget = bDoc.data();
+              } else {
+                setDoc(
+                  doc(
+                    state.db,
+                    "artifacts",
+                    state.appId,
+                    "public",
+                    "data",
+                    "budgets",
+                    budgetDocId,
+                  ),
+                  state.budget,
+                );
+              }
+              renderDashboard();
+            },
+          );
+        } catch (authSetupErr) {
+          console.error(
+            "Failed cloud handshake, falling back to demo gracefully:",
+            authSetupErr,
+          );
+          enableDemoMode();
+          return;
+        }
+
+        setupVisuals();
+        renderDashboard();
+      }
+
+      function setupVisuals() {
+        document.getElementById("loginSection").classList.add("hidden");
+        document.getElementById("app").classList.remove("hidden");
+
+        document.getElementById("userName").innerText =
+          state.activeUser.displayName;
+        document.getElementById("userPhoto").src = state.activeUser.photoURL;
+        document.getElementById("headerProfileRole").innerText =
+          `Role: ${state.activeUser.role === "admin" ? "Family Admin" : "Family Member"}`;
+
+        if (state.familyGroup) {
+          document.getElementById("familyGroupName").innerText =
+            state.familyGroup.name;
+          document.getElementById("familyActionBanner").classList.add("hidden");
+        } else {
+          document.getElementById("familyGroupName").innerText =
+            "Solo Practitioner";
+          document
+            .getElementById("familyActionBanner")
+            .classList.remove("hidden");
+        }
+
+        const catSelect = document.getElementById("expenseCategory");
+        const catFilter = document.getElementById("filterCategory");
+        if (catSelect && catFilter) {
+          catSelect.innerHTML = "";
+          catFilter.innerHTML = '<option value="ALL">All Categories</option>';
+
+          Object.keys(categoriesConfig).forEach((category) => {
+            const opt = document.createElement("option");
+            opt.value = category;
+            opt.innerText = category;
+            catSelect.appendChild(opt);
+
+            const filterOpt = document.createElement("option");
+            filterOpt.value = category;
+            filterOpt.innerText = category;
+            catFilter.appendChild(filterOpt);
+          });
+        }
+
+        syncBudgetInputs();
+
+        const editBtn = document.getElementById("btnSetBudget");
+        if (editBtn) {
+          if (state.activeUser.role === "admin") {
+            editBtn.style.display = "block";
+          } else {
+            editBtn.style.display = "none";
+          }
+        }
+
+        const adminControls = document.getElementById("adminInviteControls");
+        if (adminControls) {
+          if (state.activeUser.role === "admin" && state.familyGroup) {
+            adminControls.style.display = "flex";
+          } else {
+            adminControls.style.display = "none";
+          }
+        }
+      }
+
+      function syncBudgetInputs() {
+        const inputGrid = document.getElementById("categoryBudgetInputGrid");
+        if (inputGrid) {
+          inputGrid.innerHTML = "";
+          Object.keys(categoriesConfig).forEach((category) => {
+            const container = document.createElement("div");
+            container.className = "space-y-1";
+            container.innerHTML = `
+                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">${category}</label>
+                        <input type="number" id="budget_input_${category.replace(/\s+/g, "_")}" value="${state.budget.categories[category] || 0}" class="w-full bg-slate-900 border border-slate-800 hover:border-slate-700 focus:border-indigo-500 focus:outline-none rounded-xl px-3 py-2 text-slate-100 text-xs" />
+                    `;
+            inputGrid.appendChild(container);
+          });
+        }
+      }
+
+      function renderDashboard() {
+        calculateMetricsAndRender();
+        renderGauges();
+        updateCharts();
+        renderMembersPanel();
+        renderLedgerList();
+      }
+
+      function calculateMetricsAndRender() {
+        const todayStr = new Date().toISOString().split("T")[0];
+        const currentYearMonth = todayStr.substring(0, 7);
+
+        const activeExpenses = state.expenses.filter((exp) => {
+          if (state.activeView === "individual") {
+            return exp.userId === state.activeUser.uid;
+          } else {
+            if (state.familyGroup) {
+              return (
+                exp.groupId === state.familyGroup.groupId ||
+                exp.userId === state.activeUser.uid
+              );
+            }
+            return exp.userId === state.activeUser.uid;
+          }
+        });
+
+        let currentMonthSpent = 0;
+        activeExpenses.forEach((exp) => {
+          if (exp.date && exp.date.startsWith(currentYearMonth)) {
+            currentMonthSpent += parseFloat(exp.amount) || 0;
+          }
+        });
+
+        const activeBudgetCeiling = state.budget.totalBudget;
+        const remainingBalance = activeBudgetCeiling - currentMonthSpent;
+        const percentageSpent =
+          activeBudgetCeiling > 0
+            ? Math.round((currentMonthSpent / activeBudgetCeiling) * 100)
+            : 0;
+
+        document.getElementById("totalBudgetValue").innerText =
+          `₹${activeBudgetCeiling.toLocaleString("en-IN")}`;
+        document.getElementById("totalSpentValue").innerText =
+          `₹${currentMonthSpent.toLocaleString("en-IN")}`;
+        document.getElementById("remainingValue").innerText =
+          `₹${remainingBalance.toLocaleString("en-IN")}`;
+
+        const remainingValueEl = document.getElementById("remainingValue");
+        const remainingStatusText = document.getElementById(
+          "remainingStatusText",
+        );
+        if (remainingBalance < 0) {
+          remainingValueEl.className = "text-3xl font-extrabold text-red-400";
+          remainingStatusText.innerHTML = `<span class="text-red-400 font-semibold"><i class="fa-solid fa-circle-exclamation"></i> Budget Overdraft Alert!</span>`;
+        } else {
+          remainingValueEl.className =
+            "text-3xl font-extrabold text-emerald-400";
+          remainingStatusText.className =
+            "text-emerald-400/80 font-medium text-xs";
+          remainingStatusText.innerText = "Safe spending surplus limit";
+        }
+
+        document.getElementById("spentPercentage").innerText =
+          `${percentageSpent}% of allocated budget spent`;
+        document.getElementById("budgetCardLabel").innerText =
+          `${state.activeView === "individual" ? "My Solo Budget" : "Family Pooled Budget"}`;
+
+        const allocCount = Object.values(state.budget.categories).filter(
+          (x) => x > 0,
+        ).length;
+        document.getElementById("budgetLimitCount").innerText =
+          `${allocCount} category budget limits configured`;
+      }
+
+      function renderGauges() {
+        const listContainer = document.getElementById("categoryGaugesList");
+        if (!listContainer) return;
+        listContainer.innerHTML = "";
+
+        const todayStr = new Date().toISOString().split("T")[0];
+        const currentYearMonth = todayStr.substring(0, 7);
+
+        const categorySpentMap = {};
+        Object.keys(categoriesConfig).forEach(
+          (cat) => (categorySpentMap[cat] = 0),
+        );
+
+        const activeExpenses = state.expenses.filter((exp) => {
+          if (state.activeView === "individual") {
+            return exp.userId === state.activeUser.uid;
+          } else {
+            if (state.familyGroup) {
+              return (
+                exp.groupId === state.familyGroup.groupId ||
+                exp.userId === state.activeUser.uid
+              );
+            }
+            return exp.userId === state.activeUser.uid;
+          }
+        });
+
+        activeExpenses.forEach((exp) => {
+          if (exp.date && exp.date.startsWith(currentYearMonth)) {
+            categorySpentMap[exp.category] =
+              (categorySpentMap[exp.category] || 0) +
+              (parseFloat(exp.amount) || 0);
+          }
+        });
+
+        Object.keys(categoriesConfig).forEach((category) => {
+          const conf = categoriesConfig[category];
+          const spent = categorySpentMap[category] || 0;
+          const allocated = state.budget.categories[category] || 0;
+          const percent =
+            allocated > 0
+              ? Math.min(Math.round((spent / allocated) * 100), 100)
+              : 0;
+          const remaining = allocated - spent;
+
+          let progressColorClass = "bg-indigo-600";
+          if (percent >= 90) {
+            progressColorClass = "bg-red-500";
+          } else if (percent >= 75) {
+            progressColorClass = "bg-amber-500";
+          } else if (percent > 0) {
+            progressColorClass = `bg-${conf.color.split("-")[0]}-500`;
+          }
+
+          const gauge = document.createElement("div");
+          gauge.className =
+            "space-y-1.5 p-3 rounded-2xl bg-slate-900/40 border border-slate-800/60";
+          gauge.innerHTML = `
+                    <div class="flex items-center justify-between text-xs">
+                        <div class="flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-lg ${conf.bg} ${conf.color} flex items-center justify-center text-[11px]"><i class="${conf.icon}"></i></span>
+                            <span class="font-bold text-slate-200">${category}</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="font-extrabold text-slate-200">₹${spent.toLocaleString("en-IN")}</span>
+                            <span class="text-slate-500 text-[10px]"> / ₹${allocated.toLocaleString("en-IN")}</span>
+                        </div>
+                    </div>
+                    <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden relative">
+                        <div class="h-full ${progressColorClass} rounded-full" style="width: ${percent}%"></div>
+                    </div>
+                    <div class="flex items-center justify-between text-[10px]">
+                        <span class="${percent >= 90 ? "text-red-400 font-bold" : "text-slate-400"}">${percent}% Used</span>
+                        <span class="${remaining < 0 ? "text-red-400 font-bold" : "text-emerald-400 font-bold"}">
+                            ${remaining >= 0 ? `₹${remaining.toLocaleString("en-IN")} Left` : `Over spent by ₹${Math.abs(remaining).toLocaleString("en-IN")}`}
+                        </span>
+                    </div>
+                `;
+          listContainer.appendChild(gauge);
+        });
+      }
+
+      function renderMembersPanel() {
+        const container = document.getElementById("familyGroupSection");
+        const grid = document.getElementById("familyMembersGrid");
+        if (!container || !grid) return;
+
+        if (state.activeView !== "family" || !state.familyGroup) {
+          container.classList.add("hidden");
+          return;
+        }
+
+        container.classList.remove("hidden");
+        grid.innerHTML = "";
+
+        const userSpentTotals = {};
+        state.familyGroup.members.forEach((m) => (userSpentTotals[m.uid] = 0));
+
+        const todayStr = new Date().toISOString().split("T")[0];
+        const currentYearMonth = todayStr.substring(0, 7);
+
+        state.expenses.forEach((exp) => {
+          if (exp.date && exp.date.startsWith(currentYearMonth)) {
+            userSpentTotals[exp.userId] =
+              (userSpentTotals[exp.userId] || 0) +
+              (parseFloat(exp.amount) || 0);
+          }
+        });
+
+        state.familyGroup.members.forEach((member) => {
+          const totalSpent = userSpentTotals[member.uid] || 0;
+          const card = document.createElement("div");
+          card.className =
+            "p-4 bg-slate-900/50 border border-slate-800 rounded-2xl flex items-center gap-3.5 relative";
+
+          const isAdmin = member.role === "admin";
+          const meText =
+            member.email === state.activeUser.email ? " (You)" : "";
+
+          card.innerHTML = `
+                    <div class="relative">
+                        <img src="${member.photoURL}" alt="${member.displayName}" class="w-11 h-11 rounded-full object-cover border-2 ${isAdmin ? "border-amber-400" : "border-indigo-500"}" />
+                        ${isAdmin ? `<span class="absolute -top-1.5 -right-1 bg-amber-400 text-slate-900 text-[8px] px-1 rounded-full font-extrabold shadow"><i class="fa-solid fa-crown"></i></span>` : ""}
+                    </div>
+                    <div class="min-w-0">
+                        <h4 class="text-xs font-extrabold text-white truncate">${member.displayName}${meText}</h4>
+                        <p class="text-[10px] text-indigo-300 font-medium">${member.role === "admin" ? "Household Admin" : "Family Member"}</p>
+                        <p class="text-slate-400 text-[10px] mt-0.5">Month Spent: <span class="font-bold text-white">₹${totalSpent.toLocaleString("en-IN")}</span></p>
+                    </div>
+                `;
+          grid.appendChild(card);
+        });
+      }
+
+      function updateCharts() {
+        const hasExpenses = state.expenses.length > 0;
+        const categoryCanvas = document.getElementById("categoryChart");
+        const budgetCanvas = document.getElementById("budgetBarChart");
+
+        if (!hasExpenses) {
+          if (categoryChartInstance) categoryChartInstance.destroy();
+          if (budgetChartInstance) budgetChartInstance.destroy();
+          return;
+        }
+
+        const todayStr = new Date().toISOString().split("T")[0];
+        const currentYearMonth = todayStr.substring(0, 7);
+
+        const activeExpenses = state.expenses.filter((exp) => {
+          if (state.activeView === "individual") {
+            return exp.userId === state.activeUser.uid;
+          } else {
+            if (state.familyGroup) {
+              return (
+                exp.groupId === state.familyGroup.groupId ||
+                exp.userId === state.activeUser.uid
+              );
+            }
+            return exp.userId === state.activeUser.uid;
+          }
+        });
+
+        const catSums = {};
+        activeExpenses.forEach((exp) => {
+          if (exp.date && exp.date.startsWith(currentYearMonth)) {
+            catSums[exp.category] =
+              (catSums[exp.category] || 0) + (parseFloat(exp.amount) || 0);
+          }
+        });
+
+        const catLabels = Object.keys(catSums);
+        const catValues = Object.values(catSums);
+        const catColors = catLabels.map(
+          (label) => categoriesConfig[label]?.hex || "#a855f7",
+        );
+
+        if (categoryChartInstance) {
+          categoryChartInstance.destroy();
+        }
+
+        if (categoryCanvas) {
+          categoryChartInstance = new Chart(categoryCanvas, {
+            type: "doughnut",
+            data: {
+              labels: catLabels,
+              datasets: [
+                {
+                  data: catValues,
+                  backgroundColor: catColors,
+                  borderColor: "#1e1b4b",
+                  borderWidth: 2,
+                  hoverOffset: 15,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  position: "right",
+                  labels: {
+                    color: "#cbd5e1",
+                    font: {
+                      family: "Plus Jakarta Sans",
+                      size: 10,
+                      weight: "bold",
+                    },
+                  },
+                },
+              },
+              cutout: "72%",
+            },
+          });
+        }
+
+        const budgetLabels = Object.keys(categoriesConfig);
+        const budgetAllocatedDataset = budgetLabels.map(
+          (cat) => state.budget.categories[cat] || 0,
+        );
+        const budgetSpentDataset = budgetLabels.map((cat) => {
+          let spentSum = 0;
+          activeExpenses.forEach((exp) => {
+            if (
+              exp.category === cat &&
+              exp.date &&
+              exp.date.startsWith(currentYearMonth)
+            ) {
+              spentSum += parseFloat(exp.amount) || 0;
+            }
+          });
+          return spentSum;
+        });
+
+        if (budgetChartInstance) {
+          budgetChartInstance.destroy();
+        }
+
+        if (budgetCanvas) {
+          budgetChartInstance = new Chart(budgetCanvas, {
+            type: "bar",
+            data: {
+              labels: budgetLabels.map((l) => l.split(" ")[0]),
+              datasets: [
+                {
+                  label: "Allocated Limit",
+                  data: budgetAllocatedDataset,
+                  backgroundColor: "rgba(99, 102, 241, 0.2)",
+                  borderColor: "rgba(99, 102, 241, 0.6)",
+                  borderWidth: 1,
+                  borderRadius: 6,
+                },
+                {
+                  label: "Spent Amount",
+                  data: budgetSpentDataset,
+                  backgroundColor: "rgba(244, 63, 94, 0.85)",
+                  borderColor: "rgba(244, 63, 94, 1)",
+                  borderWidth: 1,
+                  borderRadius: 6,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                x: {
+                  grid: { display: false },
+                  ticks: {
+                    color: "#94a3b8",
+                    font: { family: "Plus Jakarta Sans", size: 10 },
+                  },
+                },
+                y: {
+                  grid: { color: "rgba(255, 255, 255, 0.05)" },
+                  ticks: {
+                    color: "#94a3b8",
+                    font: { family: "Plus Jakarta Sans", size: 9 },
+                    callback: function (v) {
+                      return "₹" + v;
+                    },
+                  },
+                },
+              },
+              plugins: {
+                legend: {
+                  labels: {
+                    color: "#cbd5e1",
+                    font: {
+                      family: "Plus Jakarta Sans",
+                      size: 9,
+                      weight: "bold",
+                    },
+                  },
+                },
+              },
+            },
+          });
+        }
+      }
+
+      function renderLedgerList() {
+        const listContainer = document.getElementById("expenseList");
+        if (!listContainer) return;
+
+        listContainer.innerHTML = "";
+
+        const activeExpenses = state.expenses.filter((exp) => {
+          const matchesCategory =
+            state.filterCategory === "ALL" ||
+            exp.category === state.filterCategory;
+
+          let matchesScope = true;
+          if (state.activeView === "individual") {
+            matchesScope = exp.userId === state.activeUser.uid;
+          } else {
+            if (state.familyGroup) {
+              matchesScope =
+                exp.groupId === state.familyGroup.groupId ||
+                exp.userId === state.activeUser.uid;
+            } else {
+              matchesScope = exp.userId === state.activeUser.uid;
+            }
+          }
+
+          return matchesCategory && matchesScope;
+        });
+
+        if (activeExpenses.length === 0) {
+          listContainer.innerHTML = `
+                    <div class="py-12 text-center text-slate-500 flex flex-col items-center justify-center gap-2">
+                        <i class="fa-solid fa-receipt text-3xl text-slate-600"></i>
+                        <p class="text-xs font-semibold">No transactions recorded for this context.</p>
+                    </div>
+                `;
+          return;
+        }
+
+        activeExpenses.forEach((exp) => {
+          const conf =
+            categoriesConfig[exp.category] || categoriesConfig["Other General"];
+          const parsedDate = new Date(exp.date).toLocaleDateString("en-IN", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          });
+
+          const ledgerRow = document.createElement("div");
+          ledgerRow.className =
+            "flex items-center justify-between py-3.5 px-2 group hover:bg-white/5 rounded-2xl transition duration-150 gap-3";
+
+          const loggedByName =
+            exp.userId === state.activeUser.uid
+              ? "You"
+              : exp.userName || "Member";
+          const scopeBadge =
+            exp.scope === "family"
+              ? `<span class="bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 px-1.5 py-0.5 rounded text-[8px] font-bold">Family Shared</span>`
+              : `<span class="bg-slate-500/10 text-slate-300 border border-slate-500/20 px-1.5 py-0.5 rounded text-[8px] font-bold">Personal Solo</span>`;
+
+          ledgerRow.innerHTML = `
+                    <div class="flex items-center gap-3 min-w-0 flex-1">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center border shrink-0 text-sm ${conf.bg} ${conf.color} ${conf.border}">
+                            <i class="${conf.icon}"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <h4 class="text-xs font-bold text-white truncate" title="${exp.title}">${exp.title}</h4>
+                            <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 text-[9px] text-slate-400">
+                                <span class="font-bold text-slate-300">${exp.category}</span>
+                                <span>•</span>
+                                <span>${parsedDate}</span>
+                                <span>•</span>
+                                <span class="text-indigo-400">By ${loggedByName}</span>
+                            </div>
+                            ${exp.notes ? `<p class="text-[10px] text-slate-500 italic mt-0.5 truncate" title="${exp.notes}">${exp.notes}</p>` : ""}
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3 shrink-0">
+                        <div class="text-right flex flex-col items-end gap-1">
+                            <span class="text-xs font-extrabold text-white">₹${parseFloat(exp.amount).toLocaleString("en-IN")}</span>
+                            ${scopeBadge}
+                        </div>
+
+                        <div class="flex items-center gap-0.5">
+                            ${
+                              state.activeUser.role === "admin" ||
+                              exp.userId === state.activeUser.uid
+                                ? `
+                                <button data-id="${exp.id}" class="edit-btn w-7 h-7 rounded-lg flex items-center justify-center hover:bg-amber-500/15 text-slate-400 hover:text-amber-400 transition" title="Modify">
+                                    <i class="fa-solid fa-pen text-[10px]"></i>
+                                </button>
+                                <button data-id="${exp.id}" class="delete-btn w-7 h-7 rounded-lg flex items-center justify-center hover:bg-red-500/15 text-slate-400 hover:text-red-400 transition" title="Delete">
+                                    <i class="fa-solid fa-trash-can text-[10px]"></i>
+                                </button>
+                            `
+                                : ""
+                            }
+                        </div>
+                    </div>
+                `;
+
+          listContainer.appendChild(ledgerRow);
+        });
+
+        document.querySelectorAll(".edit-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const targetId = btn.getAttribute("data-id");
+            handleEditRequest(targetId);
+          });
+        });
+
+        document.querySelectorAll(".delete-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const targetId = btn.getAttribute("data-id");
+            handleDeleteRequest(targetId);
+          });
+        });
+      }
+
+      async function handleFormSubmission() {
+        const titleInput = document.getElementById("expenseTitle");
+        const amountInput = document.getElementById("expenseAmount");
+        const catSelect = document.getElementById("expenseCategory");
+        const dateInput = document.getElementById("expenseDate");
+        const scopeSelect = document.getElementById("expenseScope");
+        const notesInput = document.getElementById("expenseNotes");
+
+        const title = titleInput.value.trim();
+        const amount = parseFloat(amountInput.value);
+        const category = catSelect.value;
+        const date = dateInput.value;
+        const scope = scopeSelect.value;
+        const notes = notesInput.value.trim();
+
+        if (!title || isNaN(amount) || !category || !date) {
+          showToast(
+            "Please provide valid information for all mandatory fields.",
+            "error",
+          );
+          return;
+        }
+
+        const transactionObj = {
+          title,
+          amount,
+          category,
+          date,
+          scope,
+          notes,
+          userId: state.activeUser.uid,
+          userName: state.activeUser.displayName,
+          userPhoto: state.activeUser.photoURL,
+          groupId: state.familyGroup ? state.familyGroup.groupId : null,
+        };
+
+        try {
+          if (state.isDemoMode) {
+            if (state.editingId) {
+              const index = state.expenses.findIndex(
+                (x) => x.id === state.editingId,
+              );
+              if (index !== -1) {
+                transactionObj.userId = state.expenses[index].userId;
+                state.expenses[index] = {
+                  id: state.editingId,
+                  ...transactionObj,
+                };
+              }
+              showToast("Transaction modified successfully!");
+            } else {
+              const newId = "exp-" + Date.now();
+              state.expenses.unshift({ id: newId, ...transactionObj });
+              showToast("Transaction logged successfully!");
+            }
+            localStorage.setItem(
+              "demo_fam_expenses",
+              JSON.stringify(state.expenses),
+            );
+            resetForm();
+            renderDashboard();
+          } else {
+            const expensesCollection = collection(
+              state.db,
+              "artifacts",
+              state.appId,
+              "public",
+              "data",
+              "expenses",
+            );
+            if (state.editingId) {
+              const docRef = doc(
+                state.db,
+                "artifacts",
+                state.appId,
+                "public",
+                "data",
+                "expenses",
+                state.editingId,
+              );
+              await updateDoc(docRef, transactionObj);
+              showToast("Cloud entry updated successfully!");
+            } else {
+              await addDoc(expensesCollection, transactionObj);
+              showToast("Entry saved to cloud databases!");
+            }
+            resetForm();
+          }
+        } catch (err) {
+          console.error("Mutation failed:", err);
+          showToast("Failed to perform budget transaction.", "error");
+        }
+      }
+
+      function handleEditRequest(id) {
+        const expense = state.expenses.find((x) => x.id === id);
+        if (!expense) return;
+
+        state.editingId = id;
+        document.getElementById("editId").value = id;
+        document.getElementById("expenseTitle").value = expense.title;
+        document.getElementById("expenseAmount").value = expense.amount;
+        document.getElementById("expenseCategory").value = expense.category;
+        document.getElementById("expenseDate").value = expense.date;
+        document.getElementById("expenseScope").value =
+          expense.scope || "family";
+        document.getElementById("expenseNotes").value = expense.notes || "";
+
+        document.getElementById("formTitle").innerText = "Modify Transaction";
+        document.getElementById("resetFormBtn").classList.remove("hidden");
+        document.getElementById("saveExpenseBtn").innerHTML =
+          `<i class="fa-solid fa-check"></i> <span>Update Entry</span>`;
+        document.getElementById("saveExpenseBtn").className =
+          "flex-2 w-full py-3 px-4 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs transition active:scale-95";
+
+        document
+          .getElementById("expenseForm")
+          .scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+
+      function resetForm() {
+        state.editingId = null;
+        document.getElementById("editId").value = "";
+        document.getElementById("expenseForm").reset();
+        document.getElementById("expenseDate").value = new Date()
+          .toISOString()
+          .split("T")[0];
+
+        document.getElementById("formTitle").innerText = "Add New Transaction";
+        document.getElementById("resetFormBtn").classList.add("hidden");
+        document.getElementById("saveExpenseBtn").innerHTML =
+          `<i class="fa-solid fa-floppy-disk"></i> <span>Log Transaction</span>`;
+        document.getElementById("saveExpenseBtn").className =
+          "flex-2 w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition active:scale-95";
+      }
+
+      function handleDeleteRequest(id) {
+        state.selectedDeleteId = id;
+        document.getElementById("confirmModal").classList.remove("hidden");
+      }
+
+      async function executeDeletion() {
+        const targetId = state.selectedDeleteId;
+        if (!targetId) return;
+
+        try {
+          if (state.isDemoMode) {
+            state.expenses = state.expenses.filter((x) => x.id !== targetId);
+            localStorage.setItem(
+              "demo_fam_expenses",
+              JSON.stringify(state.expenses),
+            );
+            showToast("Transaction deleted successfully.", "info");
+            renderDashboard();
+          } else {
+            const docRef = doc(
+              state.db,
+              "artifacts",
+              state.appId,
+              "public",
+              "data",
+              "expenses",
+              targetId,
+            );
+            await deleteDoc(docRef);
+            showToast("Cloud transaction removed.", "info");
+          }
+
+          if (state.editingId === targetId) {
+            resetForm();
+          }
+        } catch (err) {
+          console.error("Deletion failure:", err);
+          showToast("Failed to delete selected item.", "error");
+        } finally {
+          closeDeleteModal();
+        }
+      }
+
+      function closeDeleteModal() {
+        state.selectedDeleteId = null;
+        document.getElementById("confirmModal").classList.add("hidden");
+      }
+
+      async function saveAllBudgets() {
+        const newBudgetsMap = {};
+        let sumTotal = 0;
+
+        Object.keys(categoriesConfig).forEach((category) => {
+          const val =
+            parseFloat(
+              document.getElementById(
+                `budget_input_${category.replace(/\s+/g, "_")}`,
+              ).value,
+            ) || 0;
+          newBudgetsMap[category] = val;
+          sumTotal += val;
+        });
+
+        const updatedBudget = {
+          totalBudget: sumTotal,
+          categories: newBudgetsMap,
+        };
+
+        try {
+          if (state.isDemoMode) {
+            state.budget = updatedBudget;
+            localStorage.setItem(
+              "demo_fam_budget",
+              JSON.stringify(updatedBudget),
+            );
+            showToast("All localized budget caps successfully adjusted!");
+            renderDashboard();
+          } else {
+            const budgetDocId = state.familyGroup
+              ? state.familyGroup.groupId
+              : state.activeUser.uid;
+            await setDoc(
+              doc(
+                state.db,
+                "artifacts",
+                state.appId,
+                "public",
+                "data",
+                "budgets",
+                budgetDocId,
+              ),
+              updatedBudget,
+            );
+            showToast("Cloud budget caps successfully adjusted!");
+          }
+          document
+            .getElementById("budgetAllocationSettingsPanel")
+            .classList.add("hidden");
+        } catch (err) {
+          console.error("Failed adjusting budget configs:", err);
+          showToast("Failed adjusting budget parameters.", "error");
+        }
+      }
+
+      async function inviteFamilyMember() {
+        const input = document.getElementById("inviteMemberEmail");
+        const email = input.value.trim().toLowerCase();
+
+        if (!email) {
+          showToast(
+            "Please provide a valid family member email address.",
+            "error",
+          );
+          return;
+        }
+
+        try {
+          if (state.isDemoMode) {
+            if (state.familyGroup.members.some((m) => m.email === email)) {
+              showToast(
+                "This email is already associated to your household.",
+                "error",
+              );
+              return;
+            }
+
+            const short = email.split("@")[0];
+            const dummyPhoto = `https://placehold.co/100x100/312e81/ffffff?text=${short.substring(0, 2).toUpperCase()}`;
+            state.familyGroup.members.push({
+              uid: "demo-user-" + Date.now(),
+              email: email,
+              displayName: short.charAt(0).toUpperCase() + short.slice(1),
+              photoURL: dummyPhoto,
+              role: "member",
+            });
+
+            localStorage.setItem(
+              "demo_fam_group",
+              JSON.stringify(state.familyGroup),
+            );
+            showToast(`Successfully registered ${short} to family!`);
+            input.value = "";
+            renderDashboard();
+          } else {
+            const groupDocRef = doc(
+              state.db,
+              "artifacts",
+              state.appId,
+              "public",
+              "data",
+              "groups",
+              state.familyGroup.groupId,
+            );
+            const groupSnap = await getDoc(groupDocRef);
+
+            if (groupSnap.exists()) {
+              const currentData = groupSnap.data();
+              if (currentData.members.some((m) => m.email === email)) {
+                showToast(
+                  "Email already associated to your family group.",
+                  "error",
+                );
+                return;
+              }
+
+              const short = email.split("@")[0];
+              const updatedMembers = [
+                ...currentData.members,
+                {
+                  uid: crypto.randomUUID(),
+                  email: email,
+                  displayName: short.charAt(0).toUpperCase() + short.slice(1),
+                  photoURL: `https://placehold.co/100x100/312e81/ffffff?text=${short.substring(0, 2).toUpperCase()}`,
+                  role: "member",
+                },
+              ];
+
+              await updateDoc(groupDocRef, { members: updatedMembers });
+              showToast(`Sent group invite to ${email}!`);
+              input.value = "";
+            }
+          }
+        } catch (err) {
+          console.error("Invite pipeline failure:", err);
+          showToast("Failed to complete family invite request.", "error");
+        }
+      }
+
+      async function createFamilyGroupFromBanner() {
+        if (state.isDemoMode) {
+          showToast("Family group initialized under sandbox demo settings.");
+          return;
+        }
+
+        try {
+          const newGroupId = crypto.randomUUID();
+          const newGroupObj = {
+            groupId: newGroupId,
+            adminId: state.activeUser.uid,
+            adminEmail: state.activeUser.email,
+            name: `${state.activeUser.displayName.split(" ")[0]}'s Household`,
+            members: [
+              {
+                uid: state.activeUser.uid,
+                email: state.activeUser.email,
+                displayName: state.activeUser.displayName,
+                photoURL: state.activeUser.photoURL,
+                role: "admin",
+              },
+            ],
+          };
+
+          await setDoc(
+            doc(
+              state.db,
+              "artifacts",
+              state.appId,
+              "public",
+              "data",
+              "groups",
+              newGroupId,
+            ),
+            newGroupObj,
+          );
+          state.familyGroup = { id: newGroupId, ...newGroupObj };
+          setupVisuals();
+          renderDashboard();
+          showToast("Your Family Household Group was provisioned!", "success");
+        } catch (err) {
+          console.error("Provisioning family group failed:", err);
+          showToast("Failed initializing household group.", "error");
+        }
+      }
+
+      window.onload = function () {
+        document.getElementById("expenseDate").value = new Date()
+          .toISOString()
+          .split("T")[0];
+
+        document
+          .getElementById("expenseForm")
+          .addEventListener("submit", handleFormSubmission);
+        document
+          .getElementById("resetFormBtn")
+          .addEventListener("click", resetForm);
+
+        document
+          .getElementById("confirmDeleteBtn")
+          .addEventListener("click", executeDeletion);
+        document
+          .getElementById("cancelDeleteBtn")
+          .addEventListener("click", closeDeleteModal);
+
+        document
+          .getElementById("filterCategory")
+          .addEventListener("change", (e) => {
+            state.filterCategory = e.target.value;
+            renderLedgerList();
+          });
+
+        const btnTabCategory = document.getElementById("btnTabCategory");
+        const btnTabBudgets = document.getElementById("btnTabBudgets");
+        const containerCat = document.getElementById("chartContainerCategory");
+        const containerBudgets = document.getElementById(
+          "chartContainerBudgets",
+        );
+
+        btnTabCategory?.addEventListener("click", () => {
+          btnTabCategory.className =
+            "px-3 py-1.5 rounded-lg font-bold bg-indigo-600 text-white transition-all duration-200";
+          btnTabBudgets.className =
+            "px-3 py-1.5 rounded-lg font-bold text-slate-400 hover:text-white transition-all duration-200";
+          containerCat.classList.remove("hidden");
+          containerBudgets.classList.add("hidden");
+          if (categoryChartInstance) categoryChartInstance.resize();
+        });
+
+        btnTabBudgets?.addEventListener("click", () => {
+          btnTabBudgets.className =
+            "px-3 py-1.5 rounded-lg font-bold bg-indigo-600 text-white transition-all duration-200";
+          btnTabCategory.className =
+            "px-3 py-1.5 rounded-lg font-bold text-slate-400 hover:text-white transition-all duration-200";
+          containerBudgets.classList.remove("hidden");
+          containerCat.classList.add("hidden");
+          if (budgetChartInstance) budgetChartInstance.resize();
+        });
+
+        // EDIT BUDGET CLICK HANDLER (Toggles, synchronizes, and scrolls)
+        document
+          .getElementById("btnSetBudget")
+          .addEventListener("click", () => {
+            const panel = document.getElementById(
+              "budgetAllocationSettingsPanel",
+            );
+            panel.classList.toggle("hidden");
+
+            if (!panel.classList.contains("hidden")) {
+              syncBudgetInputs();
+              panel.scrollIntoView({ behavior: "smooth", block: "center" });
+
+              const firstInput = panel.querySelector("input");
+              if (firstInput) firstInput.focus();
+            }
+          });
+
+        document
+          .getElementById("btnToggleSetBudgetCollapse")
+          .addEventListener("click", () => {
+            const panel = document.getElementById(
+              "budgetAllocationSettingsPanel",
+            );
+            panel.classList.toggle("hidden");
+          });
+
+        document
+          .getElementById("saveAllBudgetsBtn")
+          .addEventListener("click", saveAllBudgets);
+
+        const btnViewInd = document.getElementById("btnViewIndividual");
+        const btnViewFam = document.getElementById("btnViewFamily");
+        const sliderHighlight = document.getElementById("toggleHighlight");
+
+        btnViewInd?.addEventListener("click", () => {
+          sliderHighlight.style.transform = "translateX(0%)";
+          btnViewInd.className =
+            "relative z-10 flex-1 text-center text-xs font-semibold h-full rounded-xl flex items-center justify-center gap-2 text-white transition-all duration-300";
+          btnViewFam.className =
+            "relative z-10 flex-1 text-center text-xs font-semibold h-full rounded-xl flex items-center justify-center gap-2 text-slate-400 transition-all duration-300";
+          state.activeView = "individual";
+          renderDashboard();
+        });
+
+        btnViewFam?.addEventListener("click", () => {
+          sliderHighlight.style.transform = "translateX(100%)";
+          btnViewFam.className =
+            "relative z-10 flex-1 text-center text-xs font-semibold h-full rounded-xl flex items-center justify-center gap-2 text-white transition-all duration-300";
+          btnViewInd.className =
+            "relative z-10 flex-1 text-center text-xs font-semibold h-full rounded-xl flex items-center justify-center gap-2 text-slate-400 transition-all duration-300";
+          state.activeView = "family";
+          renderDashboard();
+        });
+
+        document
+          .getElementById("inviteMemberBtn")
+          .addEventListener("click", inviteFamilyMember);
+        document
+          .getElementById("bannerCreateGroupBtn")
+          .addEventListener("click", createFamilyGroupFromBanner);
+
+        document
+          .getElementById("demoLoginBtn")
+          .addEventListener("click", () => {
+            enableDemoMode();
+          });
+
+        document
+          .getElementById("googleLoginBtn")
+          .addEventListener("click", async () => {
+            if (!isFirebaseConfigured) {
+              showToast(
+                "No active API configuration was detected! Paste your credentials inside index.html's script section (STEP 1).",
+                "error",
+              );
+              return;
+            }
+
+            if (state.auth) {
+              try {
+                const provider = new GoogleAuthProvider();
+                const result = await signInWithPopup(state.auth, provider);
+                state.isDemoMode = false;
+                setupAuthenticatedUser(result.user);
+              } catch (err) {
+                console.error(
+                  "Popup authentications failed, falling back to Sandboxed mode:",
+                  err,
+                );
+                enableDemoMode();
+              }
+            } else {
+              enableDemoMode();
+            }
+          });
+
+        const executeLogout = () => {
+          if (state.auth && !state.isDemoMode) {
+            signOut(state.auth).then(() => {
+              window.location.reload();
+            });
+          } else {
+            window.location.reload();
+          }
+        };
+        document
+          .getElementById("logoutBtn")
+          .addEventListener("click", executeLogout);
+        document
+          .getElementById("desktopLogoutBtn")
+          .addEventListener("click", executeLogout);
+
+        setupFirebase();
+      };
+
+      window.addEventListener("resize", () => {
+        if (categoryChartInstance) categoryChartInstance.resize();
+        if (budgetChartInstance) budgetChartInstance.resize();
+      });
+    </script>
   </body>
 </html>
