@@ -14,35 +14,35 @@ const APP = {
 const CATEGORIES = [
   {
     id: "food",
-    name: "Food",
+    name: "Dining & Outdoor Food",
     icon: "fa-utensils",
     color: "#FF6B6B",
   },
 
   {
     id: "travel",
-    name: "Travel",
+    name: "Travel & Transportation",
     icon: "fa-plane",
     color: "#4ECDC4",
   },
 
   {
     id: "shopping",
-    name: "Shopping",
+    name: "Groceries & Household Supplies",
     icon: "fa-cart-shopping",
     color: "#6C5CE7",
   },
 
   {
     id: "bills",
-    name: "Bills",
+    name: "Housing and Utilities",
     icon: "fa-file-invoice-dollar",
     color: "#F39C12",
   },
 
   {
     id: "medical",
-    name: "Medical",
+    name: "Health & Fitness",
     icon: "fa-heart-pulse",
     color: "#E74C3C",
   },
@@ -56,7 +56,7 @@ const CATEGORIES = [
 
   {
     id: "investment",
-    name: "Investment",
+    name: "Insurance & Investments",
     icon: "fa-chart-line",
     color: "#27AE60",
   },
