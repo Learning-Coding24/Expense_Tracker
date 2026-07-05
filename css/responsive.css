@@ -744,29 +744,6 @@ body {
 
   /* ---------- Expense Card ---------- */
 
-  .expense-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 15px;
-  }
-
-  .expense-right {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .expense-actions {
-    display: flex;
-    gap: 10px;
-  }
-
-  .expense-actions button {
-    width: 38px;
-    height: 38px;
-  }
-
   /* ---------- Titles ---------- */
 
   .section-title {
