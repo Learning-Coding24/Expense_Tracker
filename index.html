@@ -652,7 +652,11 @@
           </div>
 
           <div class="lg:col-span-5 space-y-6">
-            <div class="glass-card rounded-3xl p-6 space-y-4">
+            <!-- Added explicit ID to target the container card via the layout engine -->
+            <div
+              id="transactionFormCard"
+              class="glass-card rounded-3xl p-6 space-y-4"
+            >
               <div class="flex items-center gap-3">
                 <div
                   class="w-9 h-9 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center"
@@ -1072,6 +1076,42 @@
         },
       ];
 
+      // DYNAMIC ADAPTIVE VIEW ENGINE FOR MOBILE OVERFLOWS
+      function adaptLayoutForMobile() {
+        const formCard = document.getElementById("transactionFormCard");
+        const mainElement = document.querySelector("main");
+        const rightColumn = document.querySelector(".lg\\:col-span-5");
+        const recentLedgerCard = document
+          .getElementById("expenseList")
+          ?.closest(".glass-card");
+
+        if (!formCard || !mainElement) return;
+
+        // Breakpoint target: matches Tailwind's lg (1024px) media queries
+        if (window.innerWidth < 1024) {
+          const banner = document.getElementById("familyActionBanner");
+          // If the welcome setup banner is visible, append directly beneath it, else prepend at top of page
+          if (banner && !banner.classList.contains("hidden")) {
+            if (banner.nextSibling !== formCard) {
+              banner.after(formCard);
+            }
+          } else {
+            if (mainElement.firstChild !== formCard) {
+              mainElement.prepend(formCard);
+            }
+          }
+        } else {
+          // Gracefully snap the card back into its masonry block inside column 2 on desktop layouts
+          if (
+            rightColumn &&
+            recentLedgerCard &&
+            formCard.parentNode !== rightColumn
+          ) {
+            rightColumn.insertBefore(formCard, recentLedgerCard);
+          }
+        }
+      }
+
       async function setupFirebase() {
         try {
           if (!isFirebaseConfigured) {
@@ -1369,6 +1409,9 @@
             adminControls.style.display = "none";
           }
         }
+
+        // Realtime check to place form correctly depending on screen viewport
+        adaptLayoutForMobile();
       }
 
       function syncBudgetInputs() {
@@ -2418,11 +2461,14 @@
           .addEventListener("click", executeLogout);
 
         setupFirebase();
+        // Fire layout adapt configuration directly on dynamic initialization context
+        adaptLayoutForMobile();
       };
 
       window.addEventListener("resize", () => {
         if (categoryChartInstance) categoryChartInstance.resize();
         if (budgetChartInstance) budgetChartInstance.resize();
+        adaptLayoutForMobile();
       });
     </script>
   </body>
