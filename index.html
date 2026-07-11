@@ -54,9 +54,6 @@
           color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
-      /* =========================================================================
-         PREMIUM LIGHT MODE OVERRIDES
-         ========================================================================= */
       body.light-mode {
         background: radial-gradient(
           circle at 50% 0%,
@@ -159,8 +156,6 @@
       body.light-mode #toggleHighlight {
         background-color: #4f46e5 !important;
       }
-
-      /* ========================================================================= */
 
       .glass-panel {
         background: rgba(15, 23, 42, 0.45);
@@ -672,9 +667,7 @@
           <div
             id="familyMembersGrid"
             class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
-          >
-            <!-- Loaded dynamically via js -->
-          </div>
+          ></div>
         </section>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
@@ -770,9 +763,7 @@
                 <div
                   class="grid grid-cols-2 gap-3"
                   id="categoryBudgetInputGrid"
-                >
-                  <!-- Inputs built in JavaScript dynamically -->
-                </div>
+                ></div>
                 <button
                   id="saveAllBudgetsBtn"
                   class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition active:scale-95"
@@ -781,9 +772,7 @@
                 </button>
               </div>
 
-              <div id="categoryGaugesList" class="space-y-3.5">
-                <!-- Populated with beautiful custom visual bars via JS -->
-              </div>
+              <div id="categoryGaugesList" class="space-y-3.5"></div>
             </div>
           </div>
 
@@ -860,9 +849,7 @@
                       id="expenseCategory"
                       class="w-full bg-slate-900/60 border border-slate-800 hover:border-slate-700 focus:border-indigo-500 focus:outline-none rounded-xl px-3 py-3 text-slate-200 transition text-xs cursor-pointer"
                       required
-                    >
-                      <!-- Categories populated via JS -->
-                    </select>
+                    ></select>
                   </div>
                   <div>
                     <label
@@ -938,9 +925,7 @@
               <div
                 id="expenseList"
                 class="divide-y divide-slate-800/40 max-h-[360px] overflow-y-auto space-y-2 pr-1"
-              >
-                <!-- Filled dynamically -->
-              </div>
+              ></div>
             </div>
           </div>
         </div>
@@ -999,6 +984,9 @@
             "Other General": 2000,
           },
         },
+        individualBudget: null,
+        adminBudget: null,
+        allMemberBudgets: {},
         activeUser: null,
         familyGroup: null,
         isDemoMode: !isFirebaseConfigured,
@@ -1094,7 +1082,7 @@
         setTimeout(() => {
           toast.classList.add("opacity-0", "translate-y-[-10px]");
           setTimeout(() => toast.remove(), 300);
-        }, 4000);
+        }, 5000);
       }
 
       let categoryChartInstance = null;
@@ -1296,14 +1284,64 @@
           );
         }
 
-        const storedBudget = localStorage.getItem("demo_fam_budget");
-        if (storedBudget) {
-          try {
-            state.budget = JSON.parse(storedBudget);
-          } catch (e) {
-            // Stay default
-          }
+        const storedIndBudget = localStorage.getItem(
+          "demo_budget_" + state.activeUser.uid,
+        );
+        if (storedIndBudget) {
+          state.individualBudget = JSON.parse(storedIndBudget);
+        } else {
+          state.individualBudget = {
+            totalBudget: 20000,
+            categories: {
+              "Food & Dining": 5000,
+              "Utilities & Bills": 4000,
+              "Transport & Travel": 2000,
+              "Shopping & Lifestyle": 3000,
+              Entertainment: 2000,
+              "Medical & Health": 2000,
+              "Other General": 2000,
+            },
+          };
         }
+
+        const storedAdminBudget = localStorage.getItem("demo_budget_admin");
+        if (storedAdminBudget) {
+          state.adminBudget = JSON.parse(storedAdminBudget);
+        } else {
+          state.adminBudget = {
+            totalBudget: 100000,
+            categories: {
+              "Food & Dining": 30000,
+              "Utilities & Bills": 20000,
+              "Transport & Travel": 10000,
+              "Shopping & Lifestyle": 15000,
+              Entertainment: 10000,
+              "Medical & Health": 10000,
+              "Other General": 5000,
+            },
+          };
+        }
+
+        state.allMemberBudgets = {
+          "demo-user-1":
+            state.activeUser.uid === "demo-user-1"
+              ? state.individualBudget
+              : { totalBudget: 20000 },
+          "demo-user-2":
+            state.activeUser.uid === "demo-user-2"
+              ? state.individualBudget
+              : { totalBudget: 20000 },
+          "demo-user-3":
+            state.activeUser.uid === "demo-user-3"
+              ? state.individualBudget
+              : { totalBudget: 15000 },
+        };
+        state.allMemberBudgets[state.activeUser.uid] = state.individualBudget;
+
+        state.budget =
+          state.activeView === "individual"
+            ? state.individualBudget
+            : state.adminBudget;
 
         setupVisuals();
         renderDashboard();
@@ -1351,6 +1389,14 @@
           "public",
           "data",
           "expenses",
+        );
+        const budgetsCollection = collection(
+          state.db,
+          "artifacts",
+          state.appId,
+          "public",
+          "data",
+          "budgets",
         );
 
         try {
@@ -1430,39 +1476,56 @@
             renderDashboard();
           });
 
-          const budgetDocId = state.familyGroup
-            ? state.familyGroup.groupId
-            : state.activeUser.uid;
-          onSnapshot(
-            doc(
-              state.db,
-              "artifacts",
-              state.appId,
-              "public",
-              "data",
-              "budgets",
-              budgetDocId,
-            ),
-            (bDoc) => {
-              if (bDoc.exists()) {
-                state.budget = bDoc.data();
-              } else {
-                setDoc(
-                  doc(
-                    state.db,
-                    "artifacts",
-                    state.appId,
-                    "public",
-                    "data",
-                    "budgets",
-                    budgetDocId,
-                  ),
-                  state.budget,
-                );
-              }
-              renderDashboard();
-            },
-          );
+          onSnapshot(budgetsCollection, (snapshot) => {
+            state.allMemberBudgets = {};
+            snapshot.forEach((bDoc) => {
+              state.allMemberBudgets[bDoc.id] = bDoc.data();
+            });
+
+            if (state.allMemberBudgets[state.activeUser.uid]) {
+              state.individualBudget =
+                state.allMemberBudgets[state.activeUser.uid];
+            } else {
+              state.individualBudget = {
+                totalBudget: 20000,
+                categories: {
+                  "Food & Dining": 5000,
+                  "Utilities & Bills": 4000,
+                  "Transport & Travel": 2000,
+                  "Shopping & Lifestyle": 3000,
+                  Entertainment: 2000,
+                  "Medical & Health": 2000,
+                  "Other General": 2000,
+                },
+              };
+            }
+
+            const adminId = state.familyGroup
+              ? state.familyGroup.groupId
+              : "default-admin";
+            if (state.allMemberBudgets[adminId]) {
+              state.adminBudget = state.allMemberBudgets[adminId];
+            } else {
+              state.adminBudget = {
+                totalBudget: 100000,
+                categories: {
+                  "Food & Dining": 30000,
+                  "Utilities & Bills": 20000,
+                  "Transport & Travel": 10000,
+                  "Shopping & Lifestyle": 15000,
+                  Entertainment: 10000,
+                  "Medical & Health": 10000,
+                  "Other General": 5000,
+                },
+              };
+            }
+
+            state.budget =
+              state.activeView === "individual"
+                ? state.individualBudget
+                : state.adminBudget;
+            renderDashboard();
+          });
         } catch (authSetupErr) {
           console.error(
             "Failed cloud handshake, falling back to demo gracefully:",
@@ -1521,11 +1584,7 @@
 
         const editBtn = document.getElementById("btnSetBudget");
         if (editBtn) {
-          if (state.activeUser.role === "admin") {
-            editBtn.style.display = "block";
-          } else {
-            editBtn.style.display = "none";
-          }
+          editBtn.style.display = "block";
         }
 
         const adminControls = document.getElementById("adminInviteControls");
@@ -1542,7 +1601,7 @@
 
       function syncBudgetInputs() {
         const inputGrid = document.getElementById("categoryBudgetInputGrid");
-        if (inputGrid) {
+        if (inputGrid && state.budget) {
           inputGrid.innerHTML = "";
           Object.keys(categoriesConfig).forEach((category) => {
             const container = document.createElement("div");
@@ -1570,7 +1629,9 @@
 
         const activeExpenses = state.expenses.filter((exp) => {
           if (state.activeView === "individual") {
-            return exp.userId === state.activeUser.uid;
+            return (
+              exp.userId === state.activeUser.uid && exp.scope === "individual"
+            );
           } else {
             if (state.familyGroup) {
               return (
@@ -1589,7 +1650,7 @@
           }
         });
 
-        const activeBudgetCeiling = state.budget.totalBudget;
+        const activeBudgetCeiling = state.budget ? state.budget.totalBudget : 0;
         const remainingBalance = activeBudgetCeiling - currentMonthSpent;
         const percentageSpent =
           activeBudgetCeiling > 0
@@ -1621,18 +1682,18 @@
         document.getElementById("spentPercentage").innerText =
           `${percentageSpent}% of allocated budget spent`;
         document.getElementById("budgetCardLabel").innerText =
-          `${state.activeView === "individual" ? "My Solo Budget" : "Family Pooled Budget"}`;
+          `${state.activeView === "individual" ? "My Personal Budget" : "Family Master Ceiling"}`;
 
-        const allocCount = Object.values(state.budget.categories).filter(
-          (x) => x > 0,
-        ).length;
+        const allocCount = state.budget
+          ? Object.values(state.budget.categories).filter((x) => x > 0).length
+          : 0;
         document.getElementById("budgetLimitCount").innerText =
           `${allocCount} category budget limits configured`;
       }
 
       function renderGauges() {
         const listContainer = document.getElementById("categoryGaugesList");
-        if (!listContainer) return;
+        if (!listContainer || !state.budget) return;
         listContainer.innerHTML = "";
 
         const todayStr = new Date().toISOString().split("T")[0];
@@ -1645,7 +1706,9 @@
 
         const activeExpenses = state.expenses.filter((exp) => {
           if (state.activeView === "individual") {
-            return exp.userId === state.activeUser.uid;
+            return (
+              exp.userId === state.activeUser.uid && exp.scope === "individual"
+            );
           } else {
             if (state.familyGroup) {
               return (
@@ -1741,6 +1804,11 @@
 
         state.familyGroup.members.forEach((member) => {
           const totalSpent = userSpentTotals[member.uid] || 0;
+          const mBudget = state.allMemberBudgets[member.uid];
+          const budgetCapStr = mBudget
+            ? `₹${mBudget.totalBudget.toLocaleString("en-IN")}`
+            : "Not Configured";
+
           const card = document.createElement("div");
           card.className =
             "p-4 bg-slate-900/50 border border-slate-800 rounded-2xl flex items-center gap-3.5 relative";
@@ -1754,10 +1822,11 @@
                         <img src="${member.photoURL}" alt="${member.displayName}" class="w-11 h-11 rounded-full object-cover border-2 ${isAdmin ? "border-amber-400" : "border-indigo-500"}" />
                         ${isAdmin ? `<span class="absolute -top-1.5 -right-1 bg-amber-400 text-slate-900 text-[8px] px-1 rounded-full font-extrabold shadow"><i class="fa-solid fa-crown"></i></span>` : ""}
                     </div>
-                    <div class="min-w-0">
+                    <div class="min-w-0 flex-1">
                         <h4 class="text-xs font-extrabold text-white truncate">${member.displayName}${meText}</h4>
-                        <p class="text-[10px] text-indigo-300 font-medium">${member.role === "admin" ? "Household Admin" : "Family Member"}</p>
-                        <p class="text-slate-400 text-[10px] mt-0.5">Month Spent: <span class="font-bold text-white">₹${totalSpent.toLocaleString("en-IN")}</span></p>
+                        <p class="text-[9px] text-indigo-300 font-medium">${member.role === "admin" ? "Household Admin" : "Family Member"}</p>
+                        <p class="text-slate-400 text-[9px] mt-0.5">Budget Cap: <span class="font-bold text-indigo-400">${budgetCapStr}</span></p>
+                        <p class="text-slate-400 text-[9px]">Spent: <span class="font-bold text-white">₹${totalSpent.toLocaleString("en-IN")}</span></p>
                     </div>
                 `;
           grid.appendChild(card);
@@ -1769,7 +1838,6 @@
         const categoryCanvas = document.getElementById("categoryChart");
         const budgetCanvas = document.getElementById("budgetBarChart");
 
-        // DYNAMIC RENDERING COLOR ADAPTATION FOR BOTH VISUAL STATES
         const isLight = document.body.classList.contains("light-mode");
         const chartTextColor = isLight ? "#334155" : "#cbd5e1";
         const chartMutedColor = isLight ? "#64748b" : "#94a3b8";
@@ -1778,7 +1846,7 @@
           : "rgba(255, 255, 255, 0.05)";
         const chartBorderColor = isLight ? "#ffffff" : "#1e1b4b";
 
-        if (!hasExpenses) {
+        if (!hasExpenses || !state.budget) {
           if (categoryChartInstance) categoryChartInstance.destroy();
           if (budgetChartInstance) budgetChartInstance.destroy();
           return;
@@ -1789,7 +1857,9 @@
 
         const activeExpenses = state.expenses.filter((exp) => {
           if (state.activeView === "individual") {
-            return exp.userId === state.activeUser.uid;
+            return (
+              exp.userId === state.activeUser.uid && exp.scope === "individual"
+            );
           } else {
             if (state.familyGroup) {
               return (
@@ -1955,7 +2025,8 @@
 
           let matchesScope = true;
           if (state.activeView === "individual") {
-            matchesScope = exp.userId === state.activeUser.uid;
+            matchesScope =
+              exp.userId === state.activeUser.uid && exp.scope === "individual";
           } else {
             if (state.familyGroup) {
               matchesScope =
@@ -1999,7 +2070,7 @@
           const scopeBadge =
             exp.scope === "family"
               ? `<span class="bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 px-1.5 py-0.5 rounded text-[8px] font-bold">Family Shared</span>`
-              : `<span class="bg-slate-500/10 text-slate-300 border border-slate-500/20 px-1.5 py-0.5 rounded text-[8px] font-bold">Personal Solo</span>`;
+              : `<span class="bg-amber-500/10 text-amber-300 border border-amber-500/20 px-1.5 py-0.5 rounded text-[8px] font-bold">Personal Solo</span>`;
 
           ledgerRow.innerHTML = `
                     <div class="flex items-center gap-3 min-w-0 flex-1">
@@ -2265,19 +2336,54 @@
           categories: newBudgetsMap,
         };
 
+        if (state.activeView === "individual" && state.familyGroup) {
+          let otherMembersBudgetsSum = 0;
+          state.familyGroup.members.forEach((m) => {
+            if (m.uid !== state.activeUser.uid) {
+              const mBudget = state.allMemberBudgets[m.uid];
+              otherMembersBudgetsSum += mBudget
+                ? parseFloat(mBudget.totalBudget) || 0
+                : 20000;
+            }
+          });
+
+          const adminCap =
+            parseFloat(state.adminBudget ? state.adminBudget.totalBudget : 0) ||
+            100000;
+          if (otherMembersBudgetsSum + sumTotal > adminCap) {
+            showToast(
+              `🚫 Budget Limit Exceeded! Combined personal budgets (₹${(otherMembersBudgetsSum + sumTotal).toLocaleString("en-IN")}) cannot exceed the master pool ceiling set by the Admin (₹${adminCap.toLocaleString("en-IN")}).`,
+              "error",
+            );
+            return;
+          }
+        }
+
         try {
           if (state.isDemoMode) {
+            if (state.activeView === "individual") {
+              state.individualBudget = updatedBudget;
+              state.allMemberBudgets[state.activeUser.uid] = updatedBudget;
+              localStorage.setItem(
+                "demo_budget_" + state.activeUser.uid,
+                JSON.stringify(updatedBudget),
+              );
+              showToast("Your individual budget caps successfully adjusted!");
+            } else {
+              state.adminBudget = updatedBudget;
+              localStorage.setItem(
+                "demo_budget_admin",
+                JSON.stringify(updatedBudget),
+              );
+              showToast("Admin master budget ceiling successfully adjusted!");
+            }
             state.budget = updatedBudget;
-            localStorage.setItem(
-              "demo_fam_budget",
-              JSON.stringify(updatedBudget),
-            );
-            showToast("All localized budget caps successfully adjusted!");
             renderDashboard();
           } else {
-            const budgetDocId = state.familyGroup
-              ? state.familyGroup.groupId
-              : state.activeUser.uid;
+            const budgetDocId =
+              state.activeView === "individual"
+                ? state.activeUser.uid
+                : state.familyGroup.groupId;
             await setDoc(
               doc(
                 state.db,
@@ -2290,7 +2396,11 @@
               ),
               updatedBudget,
             );
-            showToast("Cloud budget caps successfully adjusted!");
+            showToast(
+              state.activeView === "individual"
+                ? "Individual budget caps successfully adjusted!"
+                : "Admin master budget ceiling successfully adjusted!",
+            );
           }
           document
             .getElementById("budgetAllocationSettingsPanel")
@@ -2325,13 +2435,19 @@
 
             const short = email.split("@")[0];
             const dummyPhoto = `https://placehold.co/100x100/312e81/ffffff?text=${short.substring(0, 2).toUpperCase()}`;
+            const newMemberId = "demo-user-" + Date.now();
             state.familyGroup.members.push({
-              uid: "demo-user-" + Date.now(),
+              uid: newMemberId,
               email: email,
               displayName: short.charAt(0).toUpperCase() + short.slice(1),
               photoURL: dummyPhoto,
               role: "member",
             });
+
+            state.allMemberBudgets[newMemberId] = {
+              totalBudget: 15000,
+              categories: {},
+            };
 
             localStorage.setItem(
               "demo_fam_group",
@@ -2431,7 +2547,6 @@
         }
       }
 
-      // GLOBAL THEME IMPLEMENTATION MECHANISM
       function initThemeEngine() {
         const savedTheme = localStorage.getItem("theme") || "dark";
         if (savedTheme === "light") {
@@ -2527,22 +2642,21 @@
           if (budgetChartInstance) budgetChartInstance.resize();
         });
 
-        document
-          .getElementById("btnSetBudget")
-          .addEventListener("click", () => {
-            const panel = document.getElementById(
-              "budgetAllocationSettingsPanel",
-            );
-            panel.classList.toggle("hidden");
+        const editBtn = document.getElementById("btnSetBudget");
+        editBtn.addEventListener("click", () => {
+          const panel = document.getElementById(
+            "budgetAllocationSettingsPanel",
+          );
+          panel.classList.toggle("hidden");
 
-            if (!panel.classList.contains("hidden")) {
-              syncBudgetInputs();
-              panel.scrollIntoView({ behavior: "smooth", block: "center" });
+          if (!panel.classList.contains("hidden")) {
+            syncBudgetInputs();
+            panel.scrollIntoView({ behavior: "smooth", block: "center" });
 
-              const firstInput = panel.querySelector("input");
-              if (firstInput) firstInput.focus();
-            }
-          });
+            const firstInput = panel.querySelector("input");
+            if (firstInput) firstInput.focus();
+          }
+        });
 
         document
           .getElementById("btnToggleSetBudgetCollapse")
@@ -2568,6 +2682,8 @@
           btnViewFam.className =
             "relative z-10 flex-1 text-center text-xs font-semibold h-full rounded-xl flex items-center justify-center gap-2 text-slate-400 transition-all duration-300";
           state.activeView = "individual";
+          state.budget = state.individualBudget;
+          if (editBtn) editBtn.style.display = "block";
           renderDashboard();
         });
 
@@ -2578,6 +2694,11 @@
           btnViewInd.className =
             "relative z-10 flex-1 text-center text-xs font-semibold h-full rounded-xl flex items-center justify-center gap-2 text-slate-400 transition-all duration-300";
           state.activeView = "family";
+          state.budget = state.adminBudget;
+          if (editBtn) {
+            editBtn.style.display =
+              state.activeUser.role === "admin" ? "block" : "none";
+          }
           renderDashboard();
         });
 
