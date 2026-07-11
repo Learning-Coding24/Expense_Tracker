@@ -756,6 +756,7 @@
                 class="p-4 bg-slate-950/40 border border-slate-800 rounded-2xl space-y-4 hidden animate__animated animate__fadeIn"
               >
                 <h4
+                  id="budgetAllocationPanelTitle"
                   class="text-xs font-bold text-indigo-300 uppercase tracking-wider"
                 >
                   Allocate Category Budgets
@@ -768,7 +769,7 @@
                   id="saveAllBudgetsBtn"
                   class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition active:scale-95"
                 >
-                  Save All Budgets & Recalculate
+                  Save Budgets & Recalculate
                 </button>
               </div>
 
@@ -991,6 +992,7 @@
         familyGroup: null,
         isDemoMode: !isFirebaseConfigured,
         activeView: "individual",
+        editingBudgetUserId: null, // Tracks target whose budget is actively configured by Admin
         selectedDeleteId: null,
         editingId: null,
         filterCategory: "ALL",
@@ -1269,6 +1271,17 @@
         state.familyGroup = { ...demoMockGroup };
         state.familyGroup.adminId = state.activeUser.uid;
 
+        if (state.activeUser.role === "member") {
+          state.activeUser.uid = "demo-user-2";
+          state.activeUser.displayName = "James Hansen";
+          state.activeUser.email = "member1@family.com";
+          state.activeUser.photoURL =
+            "https://placehold.co/100x100/10b981/ffffff?text=JH";
+        }
+
+        // Initialize state targets
+        state.editingBudgetUserId = state.activeUser.uid;
+
         const storedExpenses = localStorage.getItem("demo_fam_expenses");
         if (storedExpenses) {
           try {
@@ -1323,18 +1336,42 @@
         }
 
         state.allMemberBudgets = {
-          "demo-user-1":
-            state.activeUser.uid === "demo-user-1"
-              ? state.individualBudget
-              : { totalBudget: 20000 },
-          "demo-user-2":
-            state.activeUser.uid === "demo-user-2"
-              ? state.individualBudget
-              : { totalBudget: 20000 },
-          "demo-user-3":
-            state.activeUser.uid === "demo-user-3"
-              ? state.individualBudget
-              : { totalBudget: 15000 },
+          "demo-user-1": {
+            totalBudget: 20000,
+            categories: {
+              "Food & Dining": 5000,
+              "Utilities & Bills": 4000,
+              "Transport & Travel": 2000,
+              "Shopping & Lifestyle": 3000,
+              Entertainment: 2000,
+              "Medical & Health": 2000,
+              "Other General": 2000,
+            },
+          },
+          "demo-user-2": {
+            totalBudget: 20000,
+            categories: {
+              "Food & Dining": 5000,
+              "Utilities & Bills": 4000,
+              "Transport & Travel": 2000,
+              "Shopping & Lifestyle": 3000,
+              Entertainment: 2000,
+              "Medical & Health": 2000,
+              "Other General": 2000,
+            },
+          },
+          "demo-user-3": {
+            totalBudget: 15000,
+            categories: {
+              "Food & Dining": 3000,
+              "Utilities & Bills": 3000,
+              "Transport & Travel": 2000,
+              "Shopping & Lifestyle": 2000,
+              Entertainment: 2000,
+              "Medical & Health": 2000,
+              "Other General": 1000,
+            },
+          },
         };
         state.allMemberBudgets[state.activeUser.uid] = state.individualBudget;
 
@@ -1360,6 +1397,8 @@
             document.querySelector('input[name="onboardRole"]:checked')
               ?.value || "admin",
         };
+
+        state.editingBudgetUserId = state.activeUser.uid;
 
         const syncIndicator = document.getElementById("syncStatus");
         if (syncIndicator) {
@@ -1583,8 +1622,13 @@
         syncBudgetInputs();
 
         const editBtn = document.getElementById("btnSetBudget");
-        if (editBtn) {
-          editBtn.style.display = "block";
+        const capBtn = document.getElementById("btnToggleSetBudgetCollapse");
+        if (state.activeUser.role === "admin") {
+          if (editBtn) editBtn.style.display = "block";
+          if (capBtn) capBtn.style.display = "flex";
+        } else {
+          if (editBtn) editBtn.style.display = "none";
+          if (capBtn) capBtn.style.display = "none";
         }
 
         const adminControls = document.getElementById("adminInviteControls");
@@ -1601,14 +1645,22 @@
 
       function syncBudgetInputs() {
         const inputGrid = document.getElementById("categoryBudgetInputGrid");
-        if (inputGrid && state.budget) {
+        if (inputGrid) {
           inputGrid.innerHTML = "";
+          const targetUid = state.editingBudgetUserId || state.activeUser.uid;
+          const targetBudget =
+            state.allMemberBudgets[targetUid] || state.budget;
+
           Object.keys(categoriesConfig).forEach((category) => {
+            const defaultAlloc =
+              targetBudget && targetBudget.categories
+                ? targetBudget.categories[category] || 0
+                : 0;
             const container = document.createElement("div");
             container.className = "space-y-1";
             container.innerHTML = `
                         <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">${category}</label>
-                        <input type="number" id="budget_input_${category.replace(/\s+/g, "_")}" value="${state.budget.categories[category] || 0}" class="w-full bg-slate-900 border border-slate-800 hover:border-slate-700 focus:border-indigo-500 focus:outline-none rounded-xl px-3 py-2 text-slate-100 text-xs" />
+                        <input type="number" id="budget_input_${category.replace(/\s+/g, "_")}" value="${defaultAlloc}" class="w-full bg-slate-900 border border-slate-800 hover:border-slate-700 focus:border-indigo-500 focus:outline-none rounded-xl px-3 py-2 text-slate-100 text-xs" ${state.activeUser.role !== "admin" ? "disabled" : ""} />
                     `;
             inputGrid.appendChild(container);
           });
@@ -1811,11 +1863,29 @@
 
           const card = document.createElement("div");
           card.className =
-            "p-4 bg-slate-900/50 border border-slate-800 rounded-2xl flex items-center gap-3.5 relative";
+            "p-4 bg-slate-900/50 border border-slate-800 rounded-2xl flex items-center gap-3.5 relative group";
 
           const isAdmin = member.role === "admin";
           const meText =
             member.email === state.activeUser.email ? " (You)" : "";
+
+          // Access Rule 2: Render removal buttons strictly for Admin authorization
+          const isRemovalEligible =
+            state.activeUser.role === "admin" &&
+            member.uid !== state.activeUser.uid;
+          const removalButtonHtml = isRemovalEligible
+            ? `<button data-remove-uid="${member.uid}" class="remove-member-btn absolute top-3 right-3 text-slate-500 hover:text-red-400 transition" title="Remove Member">
+                <i class="fa-solid fa-user-minus text-[11px]"></i>
+               </button>`
+            : "";
+
+          // Feature: Allow Family Admin to edit the budget limits of any other individual member card
+          const isBudgetEditEligible = state.activeUser.role === "admin";
+          const editBudgetButtonHtml = isBudgetEditEligible
+            ? `<button data-edit-budget-uid="${member.uid}" data-member-name="${member.displayName}" class="edit-member-budget-btn absolute top-3 ${isRemovalEligible ? "right-9" : "right-3"} text-slate-500 hover:text-indigo-400 transition" title="Configure Budget">
+                <i class="fa-solid fa-sliders text-[11px]"></i>
+               </button>`
+            : "";
 
           card.innerHTML = `
                     <div class="relative">
@@ -1823,14 +1893,113 @@
                         ${isAdmin ? `<span class="absolute -top-1.5 -right-1 bg-amber-400 text-slate-900 text-[8px] px-1 rounded-full font-extrabold shadow"><i class="fa-solid fa-crown"></i></span>` : ""}
                     </div>
                     <div class="min-w-0 flex-1">
-                        <h4 class="text-xs font-extrabold text-white truncate">${member.displayName}${meText}</h4>
+                        <h4 class="text-xs font-extrabold text-white truncate pr-12">${member.displayName}${meText}</h4>
                         <p class="text-[9px] text-indigo-300 font-medium">${member.role === "admin" ? "Household Admin" : "Family Member"}</p>
                         <p class="text-slate-400 text-[9px] mt-0.5">Budget Cap: <span class="font-bold text-indigo-400">${budgetCapStr}</span></p>
                         <p class="text-slate-400 text-[9px]">Spent: <span class="font-bold text-white">₹${totalSpent.toLocaleString("en-IN")}</span></p>
                     </div>
+                    ${removalButtonHtml}
+                    ${editBudgetButtonHtml}
                 `;
           grid.appendChild(card);
         });
+
+        document.querySelectorAll(".remove-member-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const targetUid = btn.getAttribute("data-remove-uid");
+            removeFamilyMember(targetUid);
+          });
+        });
+
+        document.querySelectorAll(".edit-member-budget-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const targetUid = btn.getAttribute("data-edit-budget-uid");
+            const targetName = btn.getAttribute("data-member-name");
+            openBudgetEditorFor(targetUid, targetName);
+          });
+        });
+      }
+
+      function openBudgetEditorFor(uid, name) {
+        state.editingBudgetUserId = uid;
+        const panel = document.getElementById("budgetAllocationSettingsPanel");
+        panel.classList.remove("hidden");
+
+        const titleEl = document.getElementById("budgetAllocationPanelTitle");
+        if (titleEl) {
+          titleEl.innerHTML = `Configure Budget limits for <span class="text-indigo-400 font-extrabold">${name}</span>`;
+        }
+
+        // Initialize inputs using target user's custom mapped configurations
+        const targetBudget = state.allMemberBudgets[uid] || {
+          totalBudget: 20000,
+          categories: {
+            "Food & Dining": 5000,
+            "Utilities & Bills": 4000,
+            "Transport & Travel": 2000,
+            "Shopping & Lifestyle": 3000,
+            Entertainment: 2000,
+            "Medical & Health": 2000,
+            "Other General": 2000,
+          },
+        };
+
+        Object.keys(categoriesConfig).forEach((category) => {
+          const inputId = `budget_input_${category.replace(/\s+/g, "_")}`;
+          const inputEl = document.getElementById(inputId);
+          if (inputEl) {
+            inputEl.value = targetBudget.categories[category] || 0;
+          }
+        });
+
+        panel.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+
+      async function removeFamilyMember(uid) {
+        if (state.activeUser.role !== "admin") {
+          showToast("Unauthorized request action.", "error");
+          return;
+        }
+
+        try {
+          if (state.isDemoMode) {
+            state.familyGroup.members = state.familyGroup.members.filter(
+              (m) => m.uid !== uid,
+            );
+            delete state.allMemberBudgets[uid];
+            localStorage.setItem(
+              "demo_fam_group",
+              JSON.stringify(state.familyGroup),
+            );
+            showToast(
+              "Member successfully removed from household registry.",
+              "info",
+            );
+            renderDashboard();
+          } else {
+            const groupDocRef = doc(
+              state.db,
+              "artifacts",
+              state.appId,
+              "public",
+              "data",
+              "groups",
+              state.familyGroup.groupId,
+            );
+            const groupSnap = await getDoc(groupDocRef);
+            if (groupSnap.exists()) {
+              const currentData = groupSnap.data();
+              const updatedMembers = currentData.members.filter(
+                (m) => m.uid !== uid,
+              );
+              await updateDoc(groupDocRef, { members: updatedMembers });
+              showToast("Member removed from cloud registry.", "info");
+            }
+          }
+        } catch (err) {
+          console.error("Removal workflow failed:", err);
+          showToast("Failed to remove selected user profile.", "error");
+        }
       }
 
       function updateCharts() {
@@ -2317,6 +2486,20 @@
       }
 
       async function saveAllBudgets() {
+        if (state.activeUser.role !== "admin") {
+          showToast(
+            "Action forbidden for your current individual profile role.",
+            "error",
+          );
+          return;
+        }
+
+        const targetUid =
+          state.editingBudgetUserId ||
+          (state.activeView === "individual"
+            ? state.activeUser.uid
+            : state.familyGroup.groupId);
+
         const newBudgetsMap = {};
         let sumTotal = 0;
 
@@ -2336,10 +2519,11 @@
           categories: newBudgetsMap,
         };
 
-        if (state.activeView === "individual" && state.familyGroup) {
+        // Safety Guard Rules
+        if (state.familyGroup && targetUid !== state.familyGroup.groupId) {
           let otherMembersBudgetsSum = 0;
           state.familyGroup.members.forEach((m) => {
-            if (m.uid !== state.activeUser.uid) {
+            if (m.uid !== targetUid) {
               const mBudget = state.allMemberBudgets[m.uid];
               otherMembersBudgetsSum += mBudget
                 ? parseFloat(mBudget.totalBudget) || 0
@@ -2361,29 +2545,36 @@
 
         try {
           if (state.isDemoMode) {
-            if (state.activeView === "individual") {
+            state.allMemberBudgets[targetUid] = updatedBudget;
+            if (targetUid === state.activeUser.uid) {
               state.individualBudget = updatedBudget;
-              state.allMemberBudgets[state.activeUser.uid] = updatedBudget;
               localStorage.setItem(
-                "demo_budget_" + state.activeUser.uid,
+                "demo_budget_" + targetUid,
                 JSON.stringify(updatedBudget),
               );
-              showToast("Your individual budget caps successfully adjusted!");
-            } else {
+            } else if (
+              state.familyGroup &&
+              targetUid === state.familyGroup.groupId
+            ) {
               state.adminBudget = updatedBudget;
               localStorage.setItem(
                 "demo_budget_admin",
                 JSON.stringify(updatedBudget),
               );
-              showToast("Admin master budget ceiling successfully adjusted!");
+            } else {
+              localStorage.setItem(
+                "demo_budget_" + targetUid,
+                JSON.stringify(updatedBudget),
+              );
             }
-            state.budget = updatedBudget;
+
+            state.budget =
+              state.activeView === "individual"
+                ? state.individualBudget
+                : state.adminBudget;
+            showToast("Budget limits successfully updated!");
             renderDashboard();
           } else {
-            const budgetDocId =
-              state.activeView === "individual"
-                ? state.activeUser.uid
-                : state.familyGroup.groupId;
             await setDoc(
               doc(
                 state.db,
@@ -2392,15 +2583,11 @@
                 "public",
                 "data",
                 "budgets",
-                budgetDocId,
+                targetUid,
               ),
               updatedBudget,
             );
-            showToast(
-              state.activeView === "individual"
-                ? "Individual budget caps successfully adjusted!"
-                : "Admin master budget ceiling successfully adjusted!",
-            );
+            showToast("Cloud configuration update saved successfully!");
           }
           document
             .getElementById("budgetAllocationSettingsPanel")
@@ -2412,6 +2599,11 @@
       }
 
       async function inviteFamilyMember() {
+        if (state.activeUser.role !== "admin") {
+          showToast("Forbidden operational workflow request.", "error");
+          return;
+        }
+
         const input = document.getElementById("inviteMemberEmail");
         const email = input.value.trim().toLowerCase();
 
@@ -2502,11 +2694,6 @@
       }
 
       async function createFamilyGroupFromBanner() {
-        if (state.isDemoMode) {
-          showToast("Family group initialized under sandbox demo settings.");
-          return;
-        }
-
         try {
           const newGroupId = crypto.randomUUID();
           const newGroupObj = {
@@ -2525,19 +2712,24 @@
             ],
           };
 
-          await setDoc(
-            doc(
-              state.db,
-              "artifacts",
-              state.appId,
-              "public",
-              "data",
-              "groups",
-              newGroupId,
-            ),
-            newGroupObj,
-          );
-          state.familyGroup = { id: newGroupId, ...newGroupObj };
+          if (state.isDemoMode) {
+            state.familyGroup = newGroupObj;
+            localStorage.setItem("demo_fam_group", JSON.stringify(newGroupObj));
+          } else {
+            await setDoc(
+              doc(
+                state.db,
+                "artifacts",
+                state.appId,
+                "public",
+                "data",
+                "groups",
+                newGroupId,
+              ),
+              newGroupObj,
+            );
+            state.familyGroup = { id: newGroupId, ...newGroupObj };
+          }
           setupVisuals();
           renderDashboard();
           showToast("Your Family Household Group was provisioned!", "success");
@@ -2644,12 +2836,33 @@
 
         const editBtn = document.getElementById("btnSetBudget");
         editBtn.addEventListener("click", () => {
+          if (state.activeUser.role !== "admin") return;
+
           const panel = document.getElementById(
             "budgetAllocationSettingsPanel",
           );
           panel.classList.toggle("hidden");
 
           if (!panel.classList.contains("hidden")) {
+            const currentEditingId =
+              state.editingBudgetUserId ||
+              (state.activeView === "individual"
+                ? state.activeUser.uid
+                : state.familyGroup.groupId);
+            state.editingBudgetUserId = currentEditingId;
+
+            const targetName =
+              state.activeView === "individual"
+                ? `${state.activeUser.displayName} (You)`
+                : "Family Master Pool";
+
+            const titleEl = document.getElementById(
+              "budgetAllocationPanelTitle",
+            );
+            if (titleEl) {
+              titleEl.innerHTML = `Configure Budget limits for <span class="text-indigo-400 font-extrabold">${targetName}</span>`;
+            }
+
             syncBudgetInputs();
             panel.scrollIntoView({ behavior: "smooth", block: "center" });
 
@@ -2661,6 +2874,7 @@
         document
           .getElementById("btnToggleSetBudgetCollapse")
           .addEventListener("click", () => {
+            if (state.activeUser.role !== "admin") return;
             const panel = document.getElementById(
               "budgetAllocationSettingsPanel",
             );
@@ -2683,7 +2897,12 @@
             "relative z-10 flex-1 text-center text-xs font-semibold h-full rounded-xl flex items-center justify-center gap-2 text-slate-400 transition-all duration-300";
           state.activeView = "individual";
           state.budget = state.individualBudget;
-          if (editBtn) editBtn.style.display = "block";
+          state.editingBudgetUserId = state.activeUser.uid;
+
+          if (editBtn) {
+            editBtn.style.display =
+              state.activeUser.role === "admin" ? "block" : "none";
+          }
           renderDashboard();
         });
 
@@ -2695,6 +2914,10 @@
             "relative z-10 flex-1 text-center text-xs font-semibold h-full rounded-xl flex items-center justify-center gap-2 text-slate-400 transition-all duration-300";
           state.activeView = "family";
           state.budget = state.adminBudget;
+          state.editingBudgetUserId = state.familyGroup
+            ? state.familyGroup.groupId
+            : null;
+
           if (editBtn) {
             editBtn.style.display =
               state.activeUser.role === "admin" ? "block" : "none";
