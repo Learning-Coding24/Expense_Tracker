@@ -34,7 +34,7 @@
     </script>
 
     <link
-      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;750&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700;800&family=Poppins:wght=300;400;500;600;750&display=swap"
       rel="stylesheet"
     />
     <link
@@ -976,13 +976,14 @@
         budget: {
           totalBudget: 50000,
           categories: {
-            "Food & Dining": 15000,
-            "Utilities & Bills": 12000,
-            "Transport & Travel": 6000,
-            "Shopping & Lifestyle": 8000,
-            Entertainment: 4000,
-            "Medical & Health": 3000,
-            "Other General": 2000,
+            "🏠 Fixed Expenses": 15000,
+            "🛒 Groceries & Daily Essentials": 10000,
+            "🚗 Transportation & Travel": 5000,
+            "🍽️ Food, Lifestyle & Entertainment": 6000,
+            "👶 Kids & Education": 5000,
+            "🏥 Healthcare": 3000,
+            "💰 Investments & Savings": 4000,
+            "📦 Others": 2000,
           },
         },
         individualBudget: null,
@@ -992,7 +993,7 @@
         familyGroup: null,
         isDemoMode: !isFirebaseConfigured,
         activeView: "individual",
-        editingBudgetUserId: null, // Tracks target whose budget is actively configured by Admin
+        editingBudgetUserId: null, 
         selectedDeleteId: null,
         editingId: null,
         filterCategory: "ALL",
@@ -1002,50 +1003,57 @@
       };
 
       const categoriesConfig = {
-        "Food & Dining": {
+        "🏠 Fixed Expenses": {
+          icon: "fa-solid fa-house-chimney",
+          color: "indigo-400",
+          bg: "bg-indigo-500/10",
+          border: "border-indigo-500/20",
+          hex: "#6366f1",
+        },
+        "🛒 Groceries & Daily Essentials": {
+          icon: "fa-solid fa-cart-shopping",
+          color: "emerald-400",
+          bg: "bg-emerald-500/10",
+          border: "border-emerald-500/20",
+          hex: "#10b981",
+        },
+        "🚗 Transportation & Travel": {
+          icon: "fa-solid fa-car",
+          color: "sky-400",
+          bg: "bg-sky-500/10",
+          border: "border-sky-500/20",
+          hex: "#0ea5e9",
+        },
+        "🍽️ Food, Lifestyle & Entertainment": {
           icon: "fa-solid fa-utensils",
           color: "rose-400",
           bg: "bg-rose-500/10",
           border: "border-rose-500/20",
           hex: "#f43f5e",
         },
-        "Utilities & Bills": {
-          icon: "fa-solid fa-bolt",
-          color: "amber-400",
-          bg: "bg-amber-500/10",
-          border: "border-amber-500/20",
-          hex: "#f59e0b",
-        },
-        "Transport & Travel": {
-          icon: "fa-solid fa-taxi",
-          color: "sky-400",
-          bg: "bg-sky-500/10",
-          border: "border-sky-500/20",
-          hex: "#0ea5e9",
-        },
-        "Shopping & Lifestyle": {
-          icon: "fa-solid fa-bag-shopping",
+        "👶 Kids & Education": {
+          icon: "fa-solid fa-graduation-cap",
           color: "purple-400",
           bg: "bg-purple-500/10",
           border: "border-purple-500/20",
           hex: "#a855f7",
         },
-        Entertainment: {
-          icon: "fa-solid fa-ticket",
-          color: "indigo-400",
-          bg: "bg-indigo-500/10",
-          border: "border-indigo-500/20",
-          hex: "#6366f1",
-        },
-        "Medical & Health": {
+        "🏥 Healthcare": {
           icon: "fa-solid fa-heart-pulse",
-          color: "emerald-400",
-          bg: "bg-emerald-500/10",
-          border: "border-emerald-500/20",
-          hex: "#10b981",
+          color: "red-400",
+          bg: "bg-red-500/10",
+          border: "border-red-500/20",
+          hex: "#ef4444",
         },
-        "Other General": {
-          icon: "fa-solid fa-shapes",
+        "💰 Investments & Savings": {
+          icon: "fa-solid fa-piggy-bank",
+          color: "amber-400",
+          bg: "bg-amber-500/10",
+          border: "border-amber-500/20",
+          hex: "#f59e0b",
+        },
+        "📦 Others": {
+          icon: "fa-solid fa-box",
           color: "slate-400",
           bg: "bg-slate-500/10",
           border: "border-slate-500/20",
@@ -1126,74 +1134,74 @@
           userId: "demo-user-1",
           userName: "Sarah Hansen",
           userPhoto: "https://placehold.co/100x100/6366f1/ffffff?text=SH",
-          title: "Weekly WholeFoods Grocery Run",
-          amount: 12400,
-          category: "Food & Dining",
+          title: "Weekly Organic Essentials Delivery",
+          amount: 8400,
+          category: "🛒 Groceries & Daily Essentials",
           date: new Date().toISOString().split("T")[0],
           scope: "family",
-          notes: "Purchased raw foods & whole milk for children",
+          notes: "Fresh produce and kitchen supplies",
         },
         {
           id: "exp-2",
           userId: "demo-user-2",
           userName: "James Hansen",
           userPhoto: "https://placehold.co/100x100/10b981/ffffff?text=JH",
-          title: "Premium Gas Refill",
+          title: "Premium Fuel Refill",
           amount: 3200,
-          category: "Transport & Travel",
+          category: "🚗 Transportation & Travel",
           date: new Date(Date.now() - 86400000).toISOString().split("T")[0],
           scope: "family",
-          notes: "Commuter car filled",
+          notes: "SUV fully topped up",
         },
         {
           id: "exp-3",
           userId: "demo-user-3",
           userName: "Lily Hansen",
           userPhoto: "https://placehold.co/100x100/f59e0b/ffffff?text=LH",
-          title: "Monthly Fiber Internet Bill",
+          title: "High-Speed Fiber Broadband Bill",
           amount: 4800,
-          category: "Utilities & Bills",
+          category: "🏠 Fixed Expenses",
           date: new Date().toISOString().split("T")[0],
           scope: "family",
-          notes: "1Gbps automated direct payment auto-pay",
+          notes: "Autopay monthly direct debit",
         },
         {
           id: "exp-4",
           userId: "demo-user-1",
           userName: "Sarah Hansen",
           userPhoto: "https://placehold.co/100x100/6366f1/ffffff?text=SH",
-          title: "Designer Shoes Boutique",
-          amount: 8400,
-          category: "Shopping & Lifestyle",
+          title: "Designer Shoes Outlet",
+          amount: 6400,
+          category: "🍽️ Food, Lifestyle & Entertainment",
           date: new Date(Date.now() - 86400000 * 3).toISOString().split("T")[0],
           scope: "individual",
-          notes: "Personal styling purchase",
+          notes: "Personal purchase",
         },
         {
           id: "exp-5",
           userId: "demo-user-2",
           userName: "James Hansen",
           userPhoto: "https://placehold.co/100x100/10b981/ffffff?text=JH",
-          title: "Action Movie Theater IMAX",
-          amount: 1800,
-          category: "Entertainment",
+          title: "IMAX Family Movie Evening",
+          amount: 2200,
+          category: "🍽️ Food, Lifestyle & Entertainment",
           date: new Date(Date.now() - 86400000 * 5).toISOString().split("T")[0],
           scope: "family",
-          notes: "Snacks & popcorn tickets",
+          notes: "Tickets, snacks & popcorn combo",
         },
         {
           id: "exp-6",
           userId: "demo-user-1",
           userName: "Sarah Hansen",
           userPhoto: "https://placehold.co/100x100/6366f1/ffffff?text=SH",
-          title: "Medical Consultation Clinic",
+          title: "Health & Routine Checkup Consultation",
           amount: 1500,
-          category: "Medical & Health",
+          category: "🏥 Healthcare",
           date: new Date(Date.now() - 86400000 * 10)
             .toISOString()
             .split("T")[0],
           scope: "individual",
-          notes: "Personal routine checkup",
+          notes: "Routine medical consultation clinic fee",
         },
       ];
 
@@ -1279,7 +1287,6 @@
             "https://placehold.co/100x100/10b981/ffffff?text=JH";
         }
 
-        // Initialize state targets
         state.editingBudgetUserId = state.activeUser.uid;
 
         const storedExpenses = localStorage.getItem("demo_fam_expenses");
@@ -1306,13 +1313,14 @@
           state.individualBudget = {
             totalBudget: 20000,
             categories: {
-              "Food & Dining": 5000,
-              "Utilities & Bills": 4000,
-              "Transport & Travel": 2000,
-              "Shopping & Lifestyle": 3000,
-              Entertainment: 2000,
-              "Medical & Health": 2000,
-              "Other General": 2000,
+              "🏠 Fixed Expenses": 5000,
+              "🛒 Groceries & Daily Essentials": 4000,
+              "🚗 Transportation & Travel": 2000,
+              "🍽️ Food, Lifestyle & Entertainment": 3000,
+              "👶 Kids & Education": 2000,
+              "🏥 Healthcare": 1500,
+              "💰 Investments & Savings": 1500,
+              "📦 Others": 1000,
             },
           };
         }
@@ -1322,15 +1330,16 @@
           state.adminBudget = JSON.parse(storedAdminBudget);
         } else {
           state.adminBudget = {
-            totalBudget: 100000,
+            totalBudget: 50000,
             categories: {
-              "Food & Dining": 30000,
-              "Utilities & Bills": 20000,
-              "Transport & Travel": 10000,
-              "Shopping & Lifestyle": 15000,
-              Entertainment: 10000,
-              "Medical & Health": 10000,
-              "Other General": 5000,
+              "🏠 Fixed Expenses": 15000,
+              "🛒 Groceries & Daily Essentials": 10000,
+              "🚗 Transportation & Travel": 5000,
+              "🍽️ Food, Lifestyle & Entertainment": 6000,
+              "👶 Kids & Education": 5000,
+              "🏥 Healthcare": 3000,
+              "💰 Investments & Savings": 4000,
+              "📦 Others": 2000,
             },
           };
         }
@@ -1339,37 +1348,40 @@
           "demo-user-1": {
             totalBudget: 20000,
             categories: {
-              "Food & Dining": 5000,
-              "Utilities & Bills": 4000,
-              "Transport & Travel": 2000,
-              "Shopping & Lifestyle": 3000,
-              Entertainment: 2000,
-              "Medical & Health": 2000,
-              "Other General": 2000,
+              "🏠 Fixed Expenses": 5000,
+              "🛒 Groceries & Daily Essentials": 4000,
+              "🚗 Transportation & Travel": 2000,
+              "🍽️ Food, Lifestyle & Entertainment": 3000,
+              "👶 Kids & Education": 2000,
+              "🏥 Healthcare": 1500,
+              "💰 Investments & Savings": 1500,
+              "📦 Others": 1000,
             },
           },
           "demo-user-2": {
-            totalBudget: 20000,
+            totalBudget: 15000,
             categories: {
-              "Food & Dining": 5000,
-              "Utilities & Bills": 4000,
-              "Transport & Travel": 2000,
-              "Shopping & Lifestyle": 3000,
-              Entertainment: 2000,
-              "Medical & Health": 2000,
-              "Other General": 2000,
+              "🏠 Fixed Expenses": 3000,
+              "🛒 Groceries & Daily Essentials": 3000,
+              "🚗 Transportation & Travel": 2000,
+              "🍽️ Food, Lifestyle & Entertainment": 2000,
+              "👶 Kids & Education": 2000,
+              "🏥 Healthcare": 1000,
+              "💰 Investments & Savings": 1000,
+              "📦 Others": 1000,
             },
           },
           "demo-user-3": {
-            totalBudget: 15000,
+            totalBudget: 12000,
             categories: {
-              "Food & Dining": 3000,
-              "Utilities & Bills": 3000,
-              "Transport & Travel": 2000,
-              "Shopping & Lifestyle": 2000,
-              Entertainment: 2000,
-              "Medical & Health": 2000,
-              "Other General": 1000,
+              "🏠 Fixed Expenses": 2000,
+              "🛒 Groceries & Daily Essentials": 2000,
+              "🚗 Transportation & Travel": 1500,
+              "🍽️ Food, Lifestyle & Entertainment": 1500,
+              "👶 Kids & Education": 2000,
+              "🏥 Healthcare": 1000,
+              "💰 Investments & Savings": 1000,
+              "📦 Others": 1000,
             },
           },
         };
@@ -1528,13 +1540,14 @@
               state.individualBudget = {
                 totalBudget: 20000,
                 categories: {
-                  "Food & Dining": 5000,
-                  "Utilities & Bills": 4000,
-                  "Transport & Travel": 2000,
-                  "Shopping & Lifestyle": 3000,
-                  Entertainment: 2000,
-                  "Medical & Health": 2000,
-                  "Other General": 2000,
+                  "🏠 Fixed Expenses": 5000,
+                  "🛒 Groceries & Daily Essentials": 4000,
+                  "🚗 Transportation & Travel": 2000,
+                  "🍽️ Food, Lifestyle & Entertainment": 3000,
+                  "👶 Kids & Education": 2000,
+                  "🏥 Healthcare": 1500,
+                  "💰 Investments & Savings": 1500,
+                  "📦 Others": 1000,
                 },
               };
             }
@@ -1546,15 +1559,16 @@
               state.adminBudget = state.allMemberBudgets[adminId];
             } else {
               state.adminBudget = {
-                totalBudget: 100000,
+                totalBudget: 50000,
                 categories: {
-                  "Food & Dining": 30000,
-                  "Utilities & Bills": 20000,
-                  "Transport & Travel": 10000,
-                  "Shopping & Lifestyle": 15000,
-                  Entertainment: 10000,
-                  "Medical & Health": 10000,
-                  "Other General": 5000,
+                  "🏠 Fixed Expenses": 15000,
+                  "🛒 Groceries & Daily Essentials": 10000,
+                  "🚗 Transportation & Travel": 5000,
+                  "🍽️ Food, Lifestyle & Entertainment": 6000,
+                  "👶 Kids & Education": 5000,
+                  "🏥 Healthcare": 3000,
+                  "💰 Investments & Savings": 4000,
+                  "📦 Others": 2000,
                 },
               };
             }
@@ -1869,7 +1883,7 @@
           const meText =
             member.email === state.activeUser.email ? " (You)" : "";
 
-          // Access Rule 2: Render removal buttons strictly for Admin authorization
+          // Render removal buttons strictly for Admin authorization
           const isRemovalEligible =
             state.activeUser.role === "admin" &&
             member.uid !== state.activeUser.uid;
@@ -1879,10 +1893,10 @@
                </button>`
             : "";
 
-          // Feature: Allow Family Admin to edit the budget limits of any other individual member card
+          // Allow Family Admin to edit the budget limits of any other individual member card directly from this page!
           const isBudgetEditEligible = state.activeUser.role === "admin";
           const editBudgetButtonHtml = isBudgetEditEligible
-            ? `<button data-edit-budget-uid="${member.uid}" data-member-name="${member.displayName}" class="edit-member-budget-btn absolute top-3 ${isRemovalEligible ? "right-9" : "right-3"} text-slate-500 hover:text-indigo-400 transition" title="Configure Budget">
+            ? `<button data-edit-budget-uid="${member.uid}" data-member-name="${member.displayName}" class="edit-member-budget-btn absolute top-3 ${isRemovalEligible ? "right-9" : "right-3"} text-slate-500 hover:text-indigo-400 transition animate-pulse" title="Configure Budget">
                 <i class="fa-solid fa-sliders text-[11px]"></i>
                </button>`
             : "";
@@ -1934,13 +1948,14 @@
         const targetBudget = state.allMemberBudgets[uid] || {
           totalBudget: 20000,
           categories: {
-            "Food & Dining": 5000,
-            "Utilities & Bills": 4000,
-            "Transport & Travel": 2000,
-            "Shopping & Lifestyle": 3000,
-            Entertainment: 2000,
-            "Medical & Health": 2000,
-            "Other General": 2000,
+            "🏠 Fixed Expenses": 5000,
+            "🛒 Groceries & Daily Essentials": 4000,
+            "🚗 Transportation & Travel": 2000,
+            "🍽️ Food, Lifestyle & Entertainment": 3000,
+            "👶 Kids & Education": 2000,
+            "🏥 Healthcare": 1500,
+            "💰 Investments & Savings": 1500,
+            "📦 Others": 1000,
           },
         };
 
@@ -2221,7 +2236,7 @@
 
         activeExpenses.forEach((exp) => {
           const conf =
-            categoriesConfig[exp.category] || categoriesConfig["Other General"];
+            categoriesConfig[exp.category] || categoriesConfig["📦 Others"];
           const parsedDate = new Date(exp.date).toLocaleDateString("en-IN", {
             day: "2-digit",
             month: "short",
