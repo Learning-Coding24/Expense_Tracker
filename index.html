@@ -49,7 +49,118 @@
         background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #0b0f19 75%);
         -webkit-font-smoothing: antialiased;
         overflow-x: hidden;
+        transition:
+          background 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+          color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       }
+
+      /* =========================================================================
+         PREMIUM LIGHT MODE OVERRIDES
+         ========================================================================= */
+      body.light-mode {
+        background: radial-gradient(
+          circle at 50% 0%,
+          #e0e7ff 0%,
+          #f8fafc 85%
+        ) !important;
+        color: #1e293b !important;
+      }
+
+      body.light-mode .glass-panel {
+        background: rgba(255, 255, 255, 0.75) !important;
+        border: 1px solid rgba(0, 0, 0, 0.08) !important;
+      }
+
+      body.light-mode .glass-card {
+        background: rgba(255, 255, 255, 0.7) !important;
+        border: 1px solid rgba(0, 0, 0, 0.06) !important;
+        box-shadow: 0 12px 40px 0 rgba(99, 102, 241, 0.05) !important;
+      }
+
+      body.light-mode .text-white,
+      body.light-mode .text-slate-100,
+      body.light-mode h1,
+      body.light-mode h2,
+      body.light-mode h3,
+      body.light-mode h4 {
+        color: #0f172a !important;
+      }
+
+      body.light-mode .text-slate-200,
+      body.light-mode .text-slate-300,
+      body.light-mode .text-slate-400,
+      body.light-mode .text-indigo-200\/60,
+      body.light-mode .text-indigo-300\/70 {
+        color: #475569 !important;
+      }
+
+      body.light-mode .text-slate-500 {
+        color: #64748b !important;
+      }
+
+      body.light-mode .text-indigo-300 {
+        color: #4f46e5 !important;
+      }
+      body.light-mode .text-rose-300 {
+        color: #e11d48 !important;
+      }
+      body.light-mode .text-emerald-300 {
+        color: #059669 !important;
+      }
+      body.light-mode .text-amber-400 {
+        color: #b45309 !important;
+      }
+
+      body.light-mode input,
+      body.light-mode select,
+      body.light-mode textarea {
+        background-color: rgba(255, 255, 255, 0.95) !important;
+        color: #0f172a !important;
+        border-color: #cbd5e1 !important;
+      }
+      body.light-mode input:focus,
+      body.light-mode select:focus,
+      body.light-mode textarea:focus {
+        border-color: #6366f1 !important;
+      }
+      body.light-mode input::placeholder,
+      body.light-mode textarea::placeholder {
+        color: #94a3b8 !important;
+      }
+
+      body.light-mode .bg-slate-900\/50,
+      body.light-mode .bg-slate-900\/60,
+      body.light-mode .bg-slate-900\/80,
+      body.light-mode .bg-slate-800\/40,
+      body.light-mode .bg-slate-800\/60,
+      body.light-mode .bg-slate-950\/40 {
+        background-color: rgba(241, 245, 249, 0.9) !important;
+        border-color: #e2e8f0 !important;
+      }
+
+      body.light-mode .border-slate-800,
+      body.light-mode .border-slate-700 {
+        border-color: #e2e8f0 !important;
+      }
+
+      body.light-mode .divide-slate-800\/40 > * {
+        border-color: rgba(226, 232, 240, 0.7) !important;
+      }
+
+      body.light-mode .bg-slate-800 {
+        background-color: #e2e8f0 !important;
+        color: #334155 !important;
+      }
+      body.light-mode .hover\:bg-slate-700\/60:hover,
+      body.light-mode .hover\:bg-slate-700:hover {
+        background-color: #cbd5e1 !important;
+      }
+
+      body.light-mode #toggleHighlight {
+        background-color: #4f46e5 !important;
+      }
+
+      /* ========================================================================= */
 
       .glass-panel {
         background: rgba(15, 23, 42, 0.45);
@@ -89,7 +200,7 @@
   <body class="min-h-screen text-slate-100 flex flex-col antialiased">
     <div
       id="toastContainer"
-      class="fixed top-5 right-5 z-50 flex flex-col gap-3 max-w-sm w-full px-4 md:px-0"
+      class="fixed top-20 right-5 z-50 flex flex-col gap-3 max-w-sm w-full px-4 md:px-0"
     ></div>
 
     <div
@@ -140,6 +251,15 @@
       <div
         class="glass-card w-full max-w-lg p-8 md:p-10 rounded-3xl text-center z-10 relative"
       >
+        <div class="absolute top-5 right-5">
+          <button
+            class="theme-toggle-btn w-9 h-9 rounded-xl bg-slate-800/60 hover:bg-slate-700/60 text-amber-400 border border-slate-700 flex items-center justify-center transition duration-200 active:scale-95"
+            title="Toggle Light/Dark Theme"
+          >
+            <i class="fa-solid fa-sun theme-icon"></i>
+          </button>
+        </div>
+
         <div
           class="w-20 h-20 mx-auto mb-6 rounded-3xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-indigo-600 flex items-center justify-center text-white text-3xl shadow-xl shadow-indigo-500/10"
         >
@@ -264,12 +384,20 @@
               </div>
             </div>
 
-            <button
-              id="logoutBtn"
-              class="sm:hidden text-red-400 bg-red-500/10 hover:bg-red-500/20 p-2.5 rounded-xl border border-red-500/20 transition text-sm"
-            >
-              <i class="fa-solid fa-power-off"></i>
-            </button>
+            <div class="flex items-center gap-2 sm:hidden">
+              <button
+                class="theme-toggle-btn text-amber-400 bg-slate-800/40 hover:bg-slate-800/80 p-2.5 rounded-xl border border-slate-700 transition text-sm"
+                title="Toggle Theme"
+              >
+                <i class="fa-solid fa-sun theme-icon"></i>
+              </button>
+              <button
+                id="logoutBtn"
+                class="text-red-400 bg-red-500/10 hover:bg-red-500/20 p-2.5 rounded-xl border border-red-500/20 transition text-sm"
+              >
+                <i class="fa-solid fa-power-off"></i>
+              </button>
+            </div>
           </div>
 
           <div
@@ -335,6 +463,14 @@
                   No Family Group
                 </p>
               </div>
+
+              <button
+                class="theme-toggle-btn text-amber-400 hover:bg-slate-800/50 p-2 rounded-xl transition ml-2"
+                title="Toggle Theme"
+              >
+                <i class="fa-solid fa-sun theme-icon"></i>
+              </button>
+
               <button
                 id="desktopLogoutBtn"
                 class="text-slate-400 hover:text-red-400 hover:bg-red-500/10 p-2 rounded-xl transition ml-1"
@@ -652,7 +788,6 @@
           </div>
 
           <div class="lg:col-span-5 space-y-6">
-            <!-- Added explicit ID to target the container card via the layout engine -->
             <div
               id="transactionFormCard"
               class="glass-card rounded-3xl p-6 space-y-4"
@@ -838,9 +973,6 @@
         getDocs,
       } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-      // =========================================================================
-      //  STEP 1: PASTE YOUR FIREBASE CONFIGURATION OBJECT HERE!
-      // =========================================================================
       const firebaseConfig = {
         apiKey: "AIzaSyAV4BAMhRhc-HALgukjvPQLnTKf6UC1PSU",
         authDomain: "family-budget-tracker-1342c.firebaseapp.com",
@@ -850,7 +982,6 @@
         appId: "1:1021828503893:web:98eae1e5bc9ca2f948f7dc",
         measurementId: "G-67V8YF78HD",
       };
-      // =========================================================================
 
       const isFirebaseConfigured = firebaseConfig.apiKey !== "YOUR_API_KEY";
 
@@ -1076,7 +1207,6 @@
         },
       ];
 
-      // DYNAMIC ADAPTIVE VIEW ENGINE FOR MOBILE OVERFLOWS
       function adaptLayoutForMobile() {
         const formCard = document.getElementById("transactionFormCard");
         const mainElement = document.querySelector("main");
@@ -1087,10 +1217,8 @@
 
         if (!formCard || !mainElement) return;
 
-        // Breakpoint target: matches Tailwind's lg (1024px) media queries
         if (window.innerWidth < 1024) {
           const banner = document.getElementById("familyActionBanner");
-          // If the welcome setup banner is visible, append directly beneath it, else prepend at top of page
           if (banner && !banner.classList.contains("hidden")) {
             if (banner.nextSibling !== formCard) {
               banner.after(formCard);
@@ -1101,7 +1229,6 @@
             }
           }
         } else {
-          // Gracefully snap the card back into its masonry block inside column 2 on desktop layouts
           if (
             rightColumn &&
             recentLedgerCard &&
@@ -1410,7 +1537,6 @@
           }
         }
 
-        // Realtime check to place form correctly depending on screen viewport
         adaptLayoutForMobile();
       }
 
@@ -1643,6 +1769,15 @@
         const categoryCanvas = document.getElementById("categoryChart");
         const budgetCanvas = document.getElementById("budgetBarChart");
 
+        // DYNAMIC RENDERING COLOR ADAPTATION FOR BOTH VISUAL STATES
+        const isLight = document.body.classList.contains("light-mode");
+        const chartTextColor = isLight ? "#334155" : "#cbd5e1";
+        const chartMutedColor = isLight ? "#64748b" : "#94a3b8";
+        const chartGridColor = isLight
+          ? "rgba(0, 0, 0, 0.06)"
+          : "rgba(255, 255, 255, 0.05)";
+        const chartBorderColor = isLight ? "#ffffff" : "#1e1b4b";
+
         if (!hasExpenses) {
           if (categoryChartInstance) categoryChartInstance.destroy();
           if (budgetChartInstance) budgetChartInstance.destroy();
@@ -1693,7 +1828,7 @@
                 {
                   data: catValues,
                   backgroundColor: catColors,
-                  borderColor: "#1e1b4b",
+                  borderColor: chartBorderColor,
                   borderWidth: 2,
                   hoverOffset: 15,
                 },
@@ -1706,7 +1841,7 @@
                 legend: {
                   position: "right",
                   labels: {
-                    color: "#cbd5e1",
+                    color: chartTextColor,
                     font: {
                       family: "Plus Jakarta Sans",
                       size: 10,
@@ -1751,7 +1886,9 @@
                 {
                   label: "Allocated Limit",
                   data: budgetAllocatedDataset,
-                  backgroundColor: "rgba(99, 102, 241, 0.2)",
+                  backgroundColor: isLight
+                    ? "rgba(99, 102, 241, 0.4)"
+                    : "rgba(99, 102, 241, 0.2)",
                   borderColor: "rgba(99, 102, 241, 0.6)",
                   borderWidth: 1,
                   borderRadius: 6,
@@ -1773,14 +1910,14 @@
                 x: {
                   grid: { display: false },
                   ticks: {
-                    color: "#94a3b8",
+                    color: chartMutedColor,
                     font: { family: "Plus Jakarta Sans", size: 10 },
                   },
                 },
                 y: {
-                  grid: { color: "rgba(255, 255, 255, 0.05)" },
+                  grid: { color: chartGridColor },
                   ticks: {
-                    color: "#94a3b8",
+                    color: chartMutedColor,
                     font: { family: "Plus Jakarta Sans", size: 9 },
                     callback: function (v) {
                       return "₹" + v;
@@ -1791,7 +1928,7 @@
               plugins: {
                 legend: {
                   labels: {
-                    color: "#cbd5e1",
+                    color: chartTextColor,
                     font: {
                       family: "Plus Jakarta Sans",
                       size: 9,
@@ -2294,7 +2431,50 @@
         }
       }
 
+      // GLOBAL THEME IMPLEMENTATION MECHANISM
+      function initThemeEngine() {
+        const savedTheme = localStorage.getItem("theme") || "dark";
+        if (savedTheme === "light") {
+          document.body.classList.add("light-mode");
+        }
+        syncThemeUIElements(savedTheme === "light");
+
+        document.querySelectorAll(".theme-toggle-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const activeLight = document.body.classList.toggle("light-mode");
+            localStorage.setItem("theme", activeLight ? "light" : "dark");
+            syncThemeUIElements(activeLight);
+            updateCharts();
+          });
+        });
+      }
+
+      function syncThemeUIElements(isLight) {
+        const icons = document.querySelectorAll(".theme-icon");
+        const buttons = document.querySelectorAll(".theme-toggle-btn");
+
+        icons.forEach((icon) => {
+          if (isLight) {
+            icon.className = "fa-solid fa-moon theme-icon text-slate-700";
+          } else {
+            icon.className = "fa-solid fa-sun theme-icon text-amber-400";
+          }
+        });
+
+        buttons.forEach((btn) => {
+          if (isLight) {
+            btn.classList.remove("text-amber-400");
+            btn.classList.add("text-slate-700");
+          } else {
+            btn.classList.remove("text-slate-700");
+            btn.classList.add("text-amber-400");
+          }
+        });
+      }
+
       window.onload = function () {
+        initThemeEngine();
+
         document.getElementById("expenseDate").value = new Date()
           .toISOString()
           .split("T")[0];
@@ -2347,7 +2527,6 @@
           if (budgetChartInstance) budgetChartInstance.resize();
         });
 
-        // EDIT BUDGET CLICK HANDLER (Toggles, synchronizes, and scrolls)
         document
           .getElementById("btnSetBudget")
           .addEventListener("click", () => {
@@ -2461,7 +2640,6 @@
           .addEventListener("click", executeLogout);
 
         setupFirebase();
-        // Fire layout adapt configuration directly on dynamic initialization context
         adaptLayoutForMobile();
       };
 
